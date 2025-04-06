@@ -70,6 +70,13 @@ def fordFulkerson(graphOriginal):
     marked_path = find_augmenting_path(flow_graph, satured_edges)
     print("saturated edges:", satured_edges)
     print("Marked path:", marked_path)
+    
+    print("*************************************************************************")
+    
+    updateGraph = update_flow_graph(flow_graph, marked_path)
+    print("Updated flow graph:", updateGraph)
+    
+    print("*************************************************************************")
         
     return {
         "Flot Max": maximum_flow,
