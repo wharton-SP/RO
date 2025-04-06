@@ -29,3 +29,25 @@ def updateGraph(flow, residual, min_capacity, pathPassMin):
                 break
     
     return flow, residual
+
+def update_flow_graph(flow_graph, marked_path):
+    # Construire un dictionnaire pour accès rapide
+    flow_dict = {(u, v): f for (u, v, f) in flow_graph}
+
+    # Trouver la capacité minimale sur le chemin (ce qu'on peut pousser)
+    min_cap = min(cap for (_, _, cap) in marked_path)
+
+    for (u, v), sign, _ in marked_path:
+        if sign == '+':
+            flow_dict[(u, v)] = flow_dict.get((u, v), 0) + min_cap
+        else:  # signe '-'
+            # On modifie l'arc inverse
+            if (u, v) in flow_dict:
+                flow_dict[(u, v)] = flow_dict[(u, v)] - min_cap
+            else:
+                # Si l’arc inverse n’était pas dans le graphe, on l'ajoute
+                flow_dict[(u, v)] = -min_cap
+
+    # Reconvertir en liste de triplets
+    updated_flow_graph = [(u, v, f) for (u, v), f in flow_dict.items()]
+    return updated_flow_graph

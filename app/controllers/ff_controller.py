@@ -1,6 +1,7 @@
 from app.services.findMinEdge import minEdge
 from app.services.bfs import pathThroughSpecificEdge
-from app.services.updateGraph import updateGraph
+from app.services.updateGraph import updateGraph, update_flow_graph
+from app.services.mark import find_augmenting_path
 
 def fordFulkerson(graphOriginal):
     # Conversion du graphe
@@ -17,7 +18,7 @@ def fordFulkerson(graphOriginal):
     while True:
         # Filtrer les arêtes non bloquées avec capacité > 0
         available_edges = [edge for edge in residual_graph 
-                         if edge not in blocked_edges and edge[2] > 0]
+                        if edge not in blocked_edges and edge[2] > 0]
         
         if not available_edges:
             print("🚫 Plus d'arête disponible. Fin.")
@@ -60,5 +61,22 @@ def fordFulkerson(graphOriginal):
         print("Blocked paths:", path_blocked)
         print("Current flow:", maximum_flow)
         print("----------------------")
+    
+    print("Residual graph:", residual_graph)
+    print("-------------------------------------------------------------------------")
+    print("Flow graph:", flow_graph)
+    print("*************************************************************************")
+    
+    marked_path = find_augmenting_path(flow_graph, satured_edges)
+    print("saturated edges:", satured_edges)
+    print("Marked path:", marked_path)
         
-    return maximum_flow
+    return {
+        "Flot Max": maximum_flow,
+        "Graphe de Flot": [
+            {"source": u, "target": v, "flow": f} for (u, v, f) in flow_graph
+        ],
+        "Graphe Résiduel": [
+            {"source": u, "target": v, "capacity": c} for (u, v, c) in residual_graph
+        ]
+    }
