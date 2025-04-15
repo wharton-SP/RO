@@ -30,24 +30,18 @@ def updateGraph(flow, residual, min_capacity, pathPassMin):
     
     return flow, residual
 
-def update_flow_graph(flow_graph, marked_path):
-    # Construire un dictionnaire pour accès rapide
-    flow_dict = {(u, v): f for (u, v, f) in flow_graph}
+def update_flow_graph(marked_path, flow, cap_back):
+    capacite_dict = {(u, v): cap for (u, v, cap) in flow}
 
-    # Trouver la capacité minimale sur le chemin (ce qu'on peut pousser)
-    min_cap = min(cap for (_, _, cap) in marked_path)
+    for (arc, signe, val) in marked_path:
+        u, v = arc
+        if signe == '+':
+            capacite_dict[(u, v)] = capacite_dict.get((u, v), 0) + cap_back
+        elif signe == '-':
+            print("Capacité avant modification:", capacite_dict[(u, v)])
+            capacite_dict[(u, v)] = capacite_dict.get((u, v), 0) - cap_back
+            print("Capacité après modification:", capacite_dict[(u, v)])
 
-    for (u, v), sign, _ in marked_path:
-        if sign == '+':
-            flow_dict[(u, v)] = flow_dict.get((u, v), 0) + min_cap
-        else:  # signe '-'
-            # On modifie l'arc inverse
-            if (u, v) in flow_dict:
-                flow_dict[(u, v)] = flow_dict[(u, v)] - min_cap
-            else:
-                # Si l’arc inverse n’était pas dans le graphe, on l'ajoute
-                flow_dict[(u, v)] = -min_cap
-
-    # Reconvertir en liste de triplets
-    updated_flow_graph = [(u, v, f) for (u, v), f in flow_dict.items()]
-    return updated_flow_graph
+    new_flow = [(u, v, cap) for ((u, v), cap) in capacite_dict.items()]
+    return new_flow
+    
