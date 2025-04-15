@@ -13,7 +13,5 @@ def test_route():
 def calculate_route():
     data = request.get_json()
     
-    # edges = 
-    
     result = fordFulkerson(data)
     return jsonify(result)

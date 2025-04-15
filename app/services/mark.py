@@ -1,13 +1,12 @@
 def find_augmenting_path(flow, saturated_edges):
     from collections import defaultdict
 
-    # Graphe
     graph = defaultdict(list)
     flow_dict = {}
 
     for u, v, f in flow:
         graph[u].append(v)
-        graph[v].append(u)  # Ajout de l'arc inverse pour la recherche
+        graph[v].append(u) 
         flow_dict[(u, v)] = f
 
     visited = set()
@@ -18,7 +17,6 @@ def find_augmenting_path(flow, saturated_edges):
 
         visited.add(node)
 
-        # Arcs normaux non saturés
         for neighbor in graph[node]:
             if any(u == node and v == neighbor for (u, v, f) in saturated_edges):
                 continue
@@ -27,7 +25,6 @@ def find_augmenting_path(flow, saturated_edges):
                 if res:
                     return res
 
-        # Arcs inverses non nuls
         for neighbor in graph[node]:
             if (neighbor, node) in flow_dict and flow_dict[(neighbor, node)] > 0:
                 if neighbor not in visited:
