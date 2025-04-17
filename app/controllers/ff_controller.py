@@ -27,7 +27,16 @@ def fordFulkerson(graphOriginal):
     save_step(flow_graph, step, step_set)
     
     while True:
-        
+        print("111111111111111111111111111111111111111111111111")
+        print("111111111111111111111111111111111111111111111111")
+        print("111111111111111111111111111111111111111111111111")
+        print("111111111111111111111111111111111111111111111111")
+        print("111111111111111111111111111111111111111111111111")
+        print("111111111111111111111111111111111111111111111111")
+        print("111111111111111111111111111111111111111111111111")
+        print("111111111111111111111111111111111111111111111111")
+        print("111111111111111111111111111111111111111111111111")
+        print("111111111111111111111111111111111111111111111111")
         available_edges = [edge for edge in residual_graph 
                         if edge not in blocked_edges and edge[2] > 0]
         
@@ -48,10 +57,20 @@ def fordFulkerson(graphOriginal):
         if path_has_saturated:
             print("🚫 Chemin contient des arêtes saturées. Blocage.")
             path_blocked.add(tuple(pathPassMin))
+            print("******************************************")
+            print("Chemin bloquée :", path_blocked)
+            print("******************************************")
             blocked_edges.add(min_edge)
             continue
-            
+        
+        print("---------------------------------------------------------")
+        print("Chemin passant par minimale :", pathPassMin)
+        print("---------------------------------------------------------")
+        
         min_capacity = min_edge[2]
+        print("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
+        print("Flow :", flow_graph)
+        print("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
         
         flow_graph, residual_graph = updateGraph(flow_graph, residual_graph, min_capacity, pathPassMin)
         
@@ -61,6 +80,18 @@ def fordFulkerson(graphOriginal):
                     satured_edges.add((u, v, 0))
         
         maximum_flow += min_capacity
+        print("///////////////////////////////////////////////")
+        print("Flow :", flow_graph)
+        print("//////////////////////////////////////////////")
+        # print("---------------------------------------------------------")
+        # print("Chemin passant par minimale :", pathPassMin)
+        # print("---------------------------------------------------------")
+        # print("Chemin bloqué :", path_blocked)
+        # print("---------------------------------------------------------")
+        # # print("Arête bloquée :", blocked_edges)
+        # print("---------------------------------------------------------")
+        # print("Arête saturée :", satured_edges)
+        # print("---------------------------------------------------------")
         
         save_step(flow_graph, step, step_set)
 
@@ -88,6 +119,11 @@ def fordFulkerson(graphOriginal):
 
     return {
         "Flot Max": maximum_flow,
-        "Flot Complet ": fully_flow,
-        "Flot Final ": flow_graph        
+        "Flot Complet": fully_flow,
+        "Arc Saturé": list(satured_edges),
+        "Arc Bloqué": list(blocked_edges),
+        "Chemin Bloqué": list(path_blocked),
+        "Chemin Marqué": marked_path,
+        "Flot Final": flow_graph,
+        "Étapes": step
     }

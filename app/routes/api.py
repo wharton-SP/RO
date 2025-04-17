@@ -12,6 +12,8 @@ def test_route():
 @api_blueprint.route("/calculate", methods=["POST"])
 def calculate_route():
     data = request.get_json()
-    
-    result = fordFulkerson(data)
+    print("Data received:", data)
+    print("Type of data:", type(data))
+    graph_data = data["graph"] if isinstance(data, dict) and "graph" in data else data
+    result = fordFulkerson(graph_data)
     return jsonify(result)
