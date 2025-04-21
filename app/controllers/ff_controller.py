@@ -29,14 +29,6 @@ def fordFulkerson(graphOriginal):
     while True:
         print("111111111111111111111111111111111111111111111111")
         print("111111111111111111111111111111111111111111111111")
-        print("111111111111111111111111111111111111111111111111")
-        print("111111111111111111111111111111111111111111111111")
-        print("111111111111111111111111111111111111111111111111")
-        print("111111111111111111111111111111111111111111111111")
-        print("111111111111111111111111111111111111111111111111")
-        print("111111111111111111111111111111111111111111111111")
-        print("111111111111111111111111111111111111111111111111")
-        print("111111111111111111111111111111111111111111111111")
         available_edges = [edge for edge in residual_graph 
                         if edge not in blocked_edges and edge[2] > 0]
         
@@ -47,7 +39,7 @@ def fordFulkerson(graphOriginal):
         min_edge = minEdge(available_edges)
         print("Arête minimale trouvée:", min_edge)
         
-        pathPassMin = pathThroughSpecificEdge(residual_graph, min_edge)
+        pathPassMin = pathThroughSpecificEdge(residual_graph, min_edge, satured_edges)
         if not pathPassMin:
             print("🚫 Chemin bloqué pour l'arête min. Blocage de l'arête.")
             blocked_edges.add(min_edge)
