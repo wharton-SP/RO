@@ -110,12 +110,12 @@ def fordFulkerson(graphOriginal):
         print(f"Étape {i + 1}: {etape}")
 
     return {
-        "Flot Max": maximum_flow,
-        "Flot Complet": fully_flow,
-        "Arc Saturé": list(satured_edges),
-        "Arc Bloqué": list(blocked_edges),
-        "Chemin Bloqué": list(path_blocked),
-        "Chemin Marqué": marked_path,
-        "Flot Final": flow_graph,
-        "Étapes": step
+        "flotMax": maximum_flow,
+        "flotComplet": fully_flow,
+        "arcSature": list(satured_edges),
+        "arcBloque": list(blocked_edges),
+        "cheminBloque": list(path_blocked),
+        "cheminMarque": marked_path,
+        "flotFinal": flow_graph,
+        "etapes": step
     }
