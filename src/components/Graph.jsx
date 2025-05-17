@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
-import sendData from '../utils/Flow';
 
-const Graph = () => {
+const Graph = ({ sendData }) => {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
     const [draggingNode, setDraggingNode] = useState(null);
@@ -123,12 +122,22 @@ const Graph = () => {
         input.click();
     };
 
+    const addSuperNode = (type) => {
+        if (nodes.some(n => n.id === type)) {
+            alert(`Le nœud spécial ${type} existe déjà.`);
+            return;
+        }
+
+        const rect = svgRef.current.getBoundingClientRect();
+        const x = type === 'α' ? 50 : rect.width - 50;
+        const y = rect.height / 2;
+
+        setNodes([...nodes, { id: type, x, y, special: true }]);
+    };
+
     const calculateFlow = () => {
-        const data = {nodes, edges};
-        // console.log(data);
-        const res = sendData(data);
-        console.log(res);
-        
+        const data = { nodes, edges };
+        sendData(data);
     };
 
     return (
@@ -136,6 +145,8 @@ const Graph = () => {
             <div style={{ marginBottom: '10px' }}>
                 <button onClick={exportGraph}>Exporter le graphe</button>
                 <button onClick={importGraph} style={{ marginLeft: '10px' }}>Importer un graphe</button>
+                <button onClick={() => addSuperNode('α')}>α</button>
+                <button onClick={() => addSuperNode('ω')}>ω</button>
                 <button onClick={calculateFlow} style={{ marginLeft: '10px' }} >Calculer Flot Max</button>
             </div>
 
