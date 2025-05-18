@@ -3,11 +3,17 @@ from app.services.bfs import pathThroughSpecificEdge
 from app.services.updateGraph import updateGraph, update_flow_graph
 from app.services.mark import find_augmenting_path
 
-def save_step(flow_graph, step_list, step_set):
+def save_step(flow_graph, step_list, step_set, satured_edges, blocked_edges):
     flow_state = tuple(flow_graph)
     if flow_state not in step_set:
-        step_list.append(flow_state)
+        step_data = {
+            "graph": list(flow_graph),
+            "satured": list(satured_edges),
+            "blocked": list(blocked_edges)
+        }
+        step_list.append(step_data)
         step_set.add(flow_state)
+
 
 
 def fordFulkerson(graphOriginal):
@@ -22,9 +28,10 @@ def fordFulkerson(graphOriginal):
     maximum_flow = 0
     step = []
     step_set = set()
+    marked_path_list = []
 
     
-    save_step(flow_graph, step, step_set)
+    save_step(flow_graph, step, step_set, satured_edges, blocked_edges)
     
     while True:
         print("111111111111111111111111111111111111111111111111")
@@ -75,17 +82,8 @@ def fordFulkerson(graphOriginal):
         print("///////////////////////////////////////////////")
         print("Flow :", flow_graph)
         print("//////////////////////////////////////////////")
-        # print("---------------------------------------------------------")
-        # print("Chemin passant par minimale :", pathPassMin)
-        # print("---------------------------------------------------------")
-        # print("Chemin bloqué :", path_blocked)
-        # print("---------------------------------------------------------")
-        # # print("Arête bloquée :", blocked_edges)
-        # print("---------------------------------------------------------")
-        # print("Arête saturée :", satured_edges)
-        # print("---------------------------------------------------------")
         
-        save_step(flow_graph, step, step_set)
+        save_step(flow_graph, step, step_set, satured_edges, blocked_edges)
 
     fully_flow = flow_graph
     
@@ -96,6 +94,7 @@ def fordFulkerson(graphOriginal):
             print("🚫 Plus de chemin augmentant. Fin.")
             break
         else : 
+            marked_path_list.append(marked_path)
             cap_back = [val for (_, signe, val) in marked_path if signe == '-']
             
             min_back = min(cap_back) if cap_back else 0
@@ -103,19 +102,40 @@ def fordFulkerson(graphOriginal):
             
             flow_graph = update_flow_graph(marked_path, flow_graph, min_back)
             
-            save_step(flow_graph, step, step_set)
+            save_step(flow_graph, step, step_set, satured_edges, blocked_edges)
 
-    print("Étapes :")
-    for i, etape in enumerate(step):
-        print(f"Étape {i + 1}: {etape}")
+    etapes_dict = {
+        f"etape {i + 1}": etape
+        for i, etape in enumerate(step)
+    }
 
+
+    print("---------------------------------------------------------")
+    print("Flot maximum :", maximum_flow)
+    print("---------------------------------------------------------")
+    print("Flot complet :", fully_flow) 
+    print("---------------------------------------------------------")
+    print("Arêtes saturées :", satured_edges)
+    print("---------------------------------------------------------")
+    print("Arêtes bloquées :", blocked_edges)
+    print("---------------------------------------------------------") 
+    print("cheminMarque", {
+        f"path": path for i, path in enumerate(marked_path_list)
+    })
+    print("---------------------------------------------------------")
+    print("Flot final :", flow_graph)
+    print("---------------------------------------------------------")
+    print("etapes :", etapes_dict)
+    print("---------------------------------------------------------")
+    print("Fin de l'algorithme Ford-Fulkerson")
+    
     return {
         "flotMax": maximum_flow,
         "flotComplet": fully_flow,
         "arcSature": list(satured_edges),
         "arcBloque": list(blocked_edges),
-        "cheminBloque": list(path_blocked),
-        "cheminMarque": marked_path,
+        "cheminMarque": marked_path_list,
         "flotFinal": flow_graph,
-        "etapes": step
+        "etapes": etapes_dict
     }
+
