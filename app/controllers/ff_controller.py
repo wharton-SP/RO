@@ -3,17 +3,18 @@ from app.services.bfs import pathThroughSpecificEdge
 from app.services.updateGraph import updateGraph, update_flow_graph
 from app.services.mark import find_augmenting_path
 
-def save_step(flow_graph, step_list, step_set, satured_edges, blocked_edges):
+def save_step(flow_graph, step_list, step_set, satured_edges, blocked_edges, min_edge=None, path_min=None):
     flow_state = tuple(flow_graph)
     if flow_state not in step_set:
         step_data = {
             "graph": list(flow_graph),
             "satured": list(satured_edges),
-            "blocked": list(blocked_edges)
+            "blocked": list(blocked_edges),
+            "min_edge": min_edge,
+            "path_min": path_min
         }
         step_list.append(step_data)
         step_set.add(flow_state)
-
 
 
 def fordFulkerson(graphOriginal):
@@ -30,7 +31,7 @@ def fordFulkerson(graphOriginal):
     step_set = set()
     marked_path_list = []
 
-    
+    # Étape initiale
     save_step(flow_graph, step, step_set, satured_edges, blocked_edges)
     
     while True:
@@ -83,17 +84,17 @@ def fordFulkerson(graphOriginal):
         print("Flow :", flow_graph)
         print("//////////////////////////////////////////////")
         
-        save_step(flow_graph, step, step_set, satured_edges, blocked_edges)
+        save_step(flow_graph, step, step_set, satured_edges, blocked_edges, min_edge=min_edge, path_min=pathPassMin)
 
     fully_flow = flow_graph
     
-    while True :
+    while True:
         marked_path = find_augmenting_path(flow_graph, satured_edges)
         
-        if marked_path == None :
+        if marked_path is None:
             print("🚫 Plus de chemin augmentant. Fin.")
             break
-        else : 
+        else: 
             marked_path_list.append(marked_path)
             cap_back = [val for (_, signe, val) in marked_path if signe == '-']
             
@@ -102,13 +103,14 @@ def fordFulkerson(graphOriginal):
             
             flow_graph = update_flow_graph(marked_path, flow_graph, min_back)
             
+            # Pas de min_edge ni path_min ici
             save_step(flow_graph, step, step_set, satured_edges, blocked_edges)
 
+    # Construction du dictionnaire des étapes
     etapes_dict = {
         f"etape {i + 1}": etape
         for i, etape in enumerate(step)
     }
-
 
     print("---------------------------------------------------------")
     print("Flot maximum :", maximum_flow)
@@ -119,13 +121,11 @@ def fordFulkerson(graphOriginal):
     print("---------------------------------------------------------")
     print("Arêtes bloquées :", blocked_edges)
     print("---------------------------------------------------------") 
-    print("cheminMarque", {
-        f"path": path for i, path in enumerate(marked_path_list)
-    })
+    print("Chemins marqués :", marked_path_list)
     print("---------------------------------------------------------")
     print("Flot final :", flow_graph)
     print("---------------------------------------------------------")
-    print("etapes :", etapes_dict)
+    print("Étapes :", etapes_dict)
     print("---------------------------------------------------------")
     print("Fin de l'algorithme Ford-Fulkerson")
     
@@ -138,4 +138,3 @@ def fordFulkerson(graphOriginal):
         "flotFinal": flow_graph,
         "etapes": etapes_dict
     }
-
