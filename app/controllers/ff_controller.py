@@ -107,10 +107,8 @@ def fordFulkerson(graphOriginal):
             save_step(flow_graph, step, step_set, satured_edges, blocked_edges)
 
     # Construction du dictionnaire des étapes
-    etapes_dict = {
-        f"etape {i + 1}": etape
-        for i, etape in enumerate(step)
-    }
+    etapes_dict = [etape for etape in step]
+
 
     print("---------------------------------------------------------")
     print("Flot maximum :", maximum_flow)
