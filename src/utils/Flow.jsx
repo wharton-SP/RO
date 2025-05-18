@@ -20,22 +20,7 @@ export default async function sendData(data) {
     // Envoyer au backend
     const result = await sendRequest('calculate', 'POST', formattedEdges);
 
-    console.log(result.flotFinal);
-
-    const edges = result.flotFinal.map((edge) => ({
-        from: edge[0],
-        to: edge[1],
-        weight: edge[2],
-    }));
-
-    console.log(edges);
-
-    const flow = {
-        nodes: data.nodes,
-        edges: edges,
-    };
-
-    console.log(flow);
+    console.log(result);
     
-    return flow;
+    return result;
 }
