@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 const GraphResult = ({ result, coo }) => {
     const [flow, setFlow] = useState({});
     const [currentStep, setCurrentStep] = useState(0);
-    const [subStep, setSubStep] = useState(0); // 0: min_edge, 1: path_min, 2: full graph
+    const [subStep, setSubStep] = useState(0);
     const [maxStep, setMaxStep] = useState(0);
     const [nodes, setNodes] = useState([]);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -19,17 +19,21 @@ const GraphResult = ({ result, coo }) => {
         }));
     };
 
+    const shouldSkipIntermediateSteps = (etape) => {
+        return (!etape.min_edge || etape.min_edge.length === 0) &&
+            (!etape.path_min || etape.path_min.length === 0);
+    };
+
     useEffect(() => {
         if (result.etapes) {
             setFlow(formatData(result.etapes[0].graph));
             setNodes(coo);
             setMaxStep(result.etapes.length - 1);
             setCurrentStep(0);
-            setSubStep(0);
+            setSubStep(shouldSkipIntermediateSteps(result.etapes[0]) ? 2 : 0);
         }
     }, [result, coo]);
 
-    // Met à jour le flow uniquement lors du subStep 2
     useEffect(() => {
         if (subStep === 2) {
             setFlow(formatData(result.etapes[currentStep].graph));
@@ -40,12 +44,29 @@ const GraphResult = ({ result, coo }) => {
         if (isPlaying) {
             intervalRef.current = setInterval(() => {
                 setSubStep(prevSub => {
-                    if (prevSub < 2) {
+                    const etape = result.etapes[currentStep];
+                    if (shouldSkipIntermediateSteps(etape)) {
+                        setSubStep(2);
+                        setCurrentStep(prevStep => {
+                            if (prevStep < maxStep) {
+                                const nextEtape = result.etapes[prevStep + 1];
+                                setSubStep(shouldSkipIntermediateSteps(nextEtape) ? 2 : 0);
+                                return prevStep + 1;
+                            } else {
+                                clearInterval(intervalRef.current);
+                                setIsPlaying(false);
+                                return prevStep;
+                            }
+                        });
+                        return 2;
+                    } else if (prevSub < 2) {
                         return prevSub + 1;
                     } else {
                         setSubStep(0);
                         setCurrentStep(prevStep => {
                             if (prevStep < maxStep) {
+                                const nextEtape = result.etapes[prevStep + 1];
+                                setSubStep(shouldSkipIntermediateSteps(nextEtape) ? 2 : 0);
                                 return prevStep + 1;
                             } else {
                                 clearInterval(intervalRef.current);
@@ -65,11 +86,22 @@ const GraphResult = ({ result, coo }) => {
     }, [isPlaying]);
 
     const handleStepNext = () => {
-        if (subStep < 2) {
-            setSubStep(subStep + 1);
-        } else if (currentStep < maxStep) {
-            setCurrentStep(currentStep + 1);
-            setSubStep(0);
+        const etape = result.etapes[currentStep];
+
+        if (shouldSkipIntermediateSteps(etape)) {
+            if (currentStep < maxStep) {
+                const nextEtape = result.etapes[currentStep + 1];
+                setCurrentStep(currentStep + 1);
+                setSubStep(shouldSkipIntermediateSteps(nextEtape) ? 2 : 0);
+            }
+        } else {
+            if (subStep < 2) {
+                setSubStep(subStep + 1);
+            } else if (currentStep < maxStep) {
+                const nextEtape = result.etapes[currentStep + 1];
+                setCurrentStep(currentStep + 1);
+                setSubStep(shouldSkipIntermediateSteps(nextEtape) ? 2 : 0);
+            }
         }
     };
 
@@ -77,8 +109,9 @@ const GraphResult = ({ result, coo }) => {
         if (subStep > 0) {
             setSubStep(subStep - 1);
         } else if (currentStep > 0) {
+            const prevEtape = result.etapes[currentStep - 1];
             setCurrentStep(currentStep - 1);
-            setSubStep(2);
+            setSubStep(shouldSkipIntermediateSteps(prevEtape) ? 2 : 2);
         }
     };
 
@@ -106,6 +139,20 @@ const GraphResult = ({ result, coo }) => {
     const currentEtape = result.etapes[currentStep];
     const minEdge = currentEtape.min_edge;
     const pathMin = currentEtape.path_min || [];
+
+    const getEdgeCoords = (x1, y1, x2, y2, r = 20) => {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const length = Math.sqrt(dx * dx + dy * dy);
+        const offsetX = (dx / length) * r;
+        const offsetY = (dy / length) * r;
+        return {
+            x1: x1 + offsetX,
+            y1: y1 + offsetY,
+            x2: x2 - offsetX,
+            y2: y2 - offsetY,
+        };
+    };
 
     return (
         <div className="mt-8">
@@ -147,8 +194,16 @@ const GraphResult = ({ result, coo }) => {
                 onMouseUp={handleMouseUp}
             >
                 <defs>
-                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
-                        <path d="M0,0 L10,5 L0,10 Z" fill="black" />
+                    <marker
+                        id="arrow"
+                        markerWidth="4"
+                        markerHeight="4"
+                        refX="3"
+                        refY="2"
+                        orient="auto"
+                        markerUnits="userSpaceOnUse"
+                    >
+                        <path d="M0,0 L4,2 L0,4 Z" fill="black" />
                     </marker>
                 </defs>
 
@@ -157,6 +212,7 @@ const GraphResult = ({ result, coo }) => {
                     const toNode = nodes.find(n => n.id === edge.to);
                     if (!fromNode || !toNode) return null;
 
+                    const { x1, y1, x2, y2 } = getEdgeCoords(fromNode.x, fromNode.y, toNode.x, toNode.y);
                     const midX = (fromNode.x + toNode.x) / 2;
                     const midY = (fromNode.y + toNode.y) / 2;
 
@@ -185,10 +241,10 @@ const GraphResult = ({ result, coo }) => {
                     return (
                         <g key={i}>
                             <line
-                                x1={fromNode.x}
-                                y1={fromNode.y}
-                                x2={toNode.x}
-                                y2={toNode.y}
+                                x1={x1}
+                                y1={y1}
+                                x2={x2}
+                                y2={y2}
                                 stroke={color}
                                 strokeWidth={strokeWidth}
                                 markerEnd="url(#arrow)"
