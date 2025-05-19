@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import formatMarkedPath from '../utils/formatting';
 
 const GraphResult = ({ result, coo }) => {
     const [flow, setFlow] = useState({});
@@ -10,6 +11,7 @@ const GraphResult = ({ result, coo }) => {
     const intervalRef = useRef(null);
     const svgRef = useRef(null);
     const [draggingNode, setDraggingNode] = useState(null);
+    const [markedPath, setMarkedPath] = useState([]);
 
     const formatData = (data) => {
         return data.map(edge => ({
@@ -31,6 +33,12 @@ const GraphResult = ({ result, coo }) => {
             setMaxStep(result.etapes.length - 1);
             setCurrentStep(0);
             setSubStep(shouldSkipIntermediateSteps(result.etapes[0]) ? 2 : 0);
+        }
+
+        if (result.cheminMarque) {
+
+            setMarkedPath(formatMarkedPath(result.cheminMarque));
+
         }
     }, [result, coo]);
 
@@ -256,17 +264,35 @@ const GraphResult = ({ result, coo }) => {
                     );
                 })}
 
-                {nodes.map((node) => (
-                    <g
-                        key={node.id}
-                        transform={`translate(${node.x},${node.y})`}
-                        onMouseDown={() => handleNodeMouseDown(node.id)}
-                        style={{ cursor: 'pointer' }}
-                    >
-                        <circle r="20" fill={node.special ? "#32cd32" : "#1e90ff"} />
-                        <text x="0" y="5" textAnchor="middle" fill="white">{node.id}</text>
-                    </g>
-                ))}
+                {nodes.map((node) => {
+                    const isFinal = currentStep === maxStep && subStep === 2;
+                    const mark = isFinal ? markedPath.find(p => p.e === node.id) : null;
+
+                    return (
+                        <g
+                            key={node.id}
+                            transform={`translate(${node.x},${node.y})`}
+                            onMouseDown={() => handleNodeMouseDown(node.id)}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            <circle r="20" fill={node.special ? "#32cd32" : "#1e90ff"} />
+                            <text x="0" y="5" textAnchor="middle" fill="white">{node.id}</text>
+                            {mark && (
+                                <text
+                                    x="25"
+                                    y="5"
+                                    textAnchor="start"
+                                    fill={mark.s === '+' ? 'green' : 'red'}
+                                    fontWeight="bold"
+                                    fontSize="16"
+                                >
+                                    {mark.s}
+                                </text>
+                            )}
+                        </g>
+                    );
+                })}
+                
             </svg>
 
             <div className="mt-4 flex justify-center gap-8 text-sm text-gray-700">
