@@ -279,9 +279,9 @@ const GraphResult = ({ result, coo }) => {
                             <text x="0" y="5" textAnchor="middle" fill="white">{node.id}</text>
                             {mark && (
                                 <text
-                                    x="25"
-                                    y="5"
-                                    textAnchor="start"
+                                    x="0"
+                                    y="-25"
+                                    textAnchor="middle"
                                     fill={mark.s === '+' ? 'green' : 'red'}
                                     fontWeight="bold"
                                     fontSize="16"
@@ -289,10 +289,11 @@ const GraphResult = ({ result, coo }) => {
                                     {mark.s}
                                 </text>
                             )}
+
                         </g>
                     );
                 })}
-                
+
             </svg>
 
             <div className="mt-4 flex justify-center gap-8 text-sm text-gray-700">
