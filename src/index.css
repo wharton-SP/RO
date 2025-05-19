@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 .graph-container {
   position: absolute;
   width: 100%;
