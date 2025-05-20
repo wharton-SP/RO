@@ -12,6 +12,7 @@ const GraphResult = ({ result, coo }) => {
     const svgRef = useRef(null);
     const [draggingNode, setDraggingNode] = useState(null);
     const [markedPath, setMarkedPath] = useState([]);
+    const [visibleSigns, setVisibleSigns] = useState([]);
 
     const formatData = (data) => {
         return data.map(edge => ({
@@ -33,12 +34,11 @@ const GraphResult = ({ result, coo }) => {
             setMaxStep(result.etapes.length - 1);
             setCurrentStep(0);
             setSubStep(shouldSkipIntermediateSteps(result.etapes[0]) ? 2 : 0);
+            setVisibleSigns([]);
         }
 
         if (result.cheminMarque) {
-
             setMarkedPath(formatMarkedPath(result.cheminMarque));
-
         }
     }, [result, coo]);
 
@@ -46,7 +46,10 @@ const GraphResult = ({ result, coo }) => {
         if (subStep === 2) {
             setFlow(formatData(result.etapes[currentStep].graph));
         }
-    }, [subStep, currentStep, result]);
+        if (!(currentStep === maxStep && subStep === 2)) {
+            setVisibleSigns([]);
+        }
+    }, [subStep, currentStep, result, maxStep]);
 
     useEffect(() => {
         if (isPlaying) {
@@ -91,11 +94,22 @@ const GraphResult = ({ result, coo }) => {
         }
 
         return () => clearInterval(intervalRef.current);
-    }, [isPlaying]);
+    }, [currentStep, isPlaying, maxStep, result.etapes]);
 
     const handleStepNext = () => {
-        const etape = result.etapes[currentStep];
+        if (currentStep === maxStep && subStep === 2) {
+            if (visibleSigns.length < markedPath.length) {
+                setVisibleSigns(prev => [...prev, markedPath[prev.length]]);
+                return;
+            }
 
+            if (visibleSigns.length === markedPath.length) {
+                setFlow(formatData(result.flotFinal));
+                return;
+            }
+        }
+
+        const etape = result.etapes[currentStep];
         if (shouldSkipIntermediateSteps(etape)) {
             if (currentStep < maxStep) {
                 const nextEtape = result.etapes[currentStep + 1];
@@ -114,6 +128,13 @@ const GraphResult = ({ result, coo }) => {
     };
 
     const handleStepPrev = () => {
+        if (currentStep === maxStep && subStep === 2) {
+            if (visibleSigns.length > 0) {
+                setVisibleSigns(prev => prev.slice(0, -1));
+                return;
+            }
+        }
+
         if (subStep > 0) {
             setSubStep(subStep - 1);
         } else if (currentStep > 0) {
@@ -147,6 +168,25 @@ const GraphResult = ({ result, coo }) => {
     const currentEtape = result.etapes[currentStep];
     const minEdge = currentEtape.min_edge;
     const pathMin = currentEtape.path_min || [];
+    const isFinalDisplay = currentStep === maxStep && subStep === 2;
+
+    // ➕ Ajout de cette fonction dérivée
+    const getSeenMinEdges = () => {
+        const seen = [];
+        for (let i = 0; i <= currentStep; i++) {
+            const etape = result.etapes[i];
+            if (etape.min_edge && etape.min_edge.length > 0) {
+                const key = `${etape.min_edge[0]},${etape.min_edge[1]}`;
+                if (!seen.includes(key)) {
+                    seen.push(key);
+                }
+            }
+        }
+        return seen;
+    };
+
+    const seenMinEdges = getSeenMinEdges();
+    const isSeenMinEdge = (from, to) => seenMinEdges.includes(`${from},${to}`);
 
     const getEdgeCoords = (x1, y1, x2, y2, r = 20) => {
         const dx = x2 - x1;
@@ -177,7 +217,7 @@ const GraphResult = ({ result, coo }) => {
                 <button
                     onClick={handleStepNext}
                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    disabled={currentStep === maxStep && subStep === 2}
+                    disabled={currentStep === maxStep && subStep === 2 && visibleSigns.length === markedPath.length}
                 >
                     Étape suivante
                 </button>
@@ -190,7 +230,7 @@ const GraphResult = ({ result, coo }) => {
             </div>
 
             <p className="text-center text-sm text-gray-600 mb-2">
-                {['Affichage de l’arête min_edge', 'Affichage du chemin path_min', 'Affichage du graphe complet'][subStep]}
+                {isFinalDisplay ? "Affichage du graphe complet — Flot Complet" : "Affichage du graphe complet"}
             </p>
 
             <svg
@@ -257,7 +297,13 @@ const GraphResult = ({ result, coo }) => {
                                 strokeWidth={strokeWidth}
                                 markerEnd="url(#arrow)"
                             />
-                            <text x={midX} y={midY - 5} textAnchor="middle" fill="red">
+                            <text
+                                x={midX}
+                                y={midY - 5}
+                                textAnchor="middle"
+                                fill={isSeenMinEdge(edge.from, edge.to) ? "red" : "black"}
+                                fontWeight={isSeenMinEdge(edge.from, edge.to) ? "bold" : "normal"}
+                            >
                                 {edge.weight}
                             </text>
                         </g>
@@ -265,8 +311,9 @@ const GraphResult = ({ result, coo }) => {
                 })}
 
                 {nodes.map((node) => {
-                    const isFinal = currentStep === maxStep && subStep === 2;
-                    const mark = isFinal ? markedPath.find(p => p.e === node.id) : null;
+                    const mark = isFinalDisplay
+                        ? visibleSigns.find(p => p.e === node.id)
+                        : null;
 
                     return (
                         <g
@@ -289,11 +336,9 @@ const GraphResult = ({ result, coo }) => {
                                     {mark.s}
                                 </text>
                             )}
-
                         </g>
                     );
                 })}
-
             </svg>
 
             <div className="mt-4 flex justify-center gap-8 text-sm text-gray-700">
