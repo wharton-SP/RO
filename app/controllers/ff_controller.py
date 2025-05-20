@@ -108,8 +108,7 @@ def fordFulkerson(graphOriginal):
             
             flow_graph = update_flow_graph(marked_path, flow_graph, min_back)
             
-            # Pas de min_edge ni path_min ici
-            save_step(flow_graph, step, step_set, satured_edges, blocked_edges)
+            
 
     # Construction du dictionnaire des étapes
     etapes_dict = [etape for etape in step]
