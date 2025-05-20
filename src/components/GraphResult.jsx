@@ -103,10 +103,6 @@ const GraphResult = ({ result, coo }) => {
                 return;
             }
 
-            if (visibleSigns.length === markedPath.length) {
-                setFlow(formatData(result.flotFinal));
-                return;
-            }
         }
 
         const etape = result.etapes[currentStep];

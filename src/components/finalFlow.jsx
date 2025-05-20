@@ -19,7 +19,7 @@ const FinalFlow = ({ result, coo }) => {
 
     useEffect(() => {
 
-        setSaturedEdges(formatData(result.arcSature))
+        setSaturedEdges(formatData(result.arcSatureFinal))
 
         if (result.flotFinal) {
             setFlow(formatData(result.flotFinal));
