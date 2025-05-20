@@ -299,7 +299,6 @@ const GraphResult = ({ result, coo, finalF }) => {
                         }
                     }
 
-
                     return (
                         <g key={i}>
                             <line
