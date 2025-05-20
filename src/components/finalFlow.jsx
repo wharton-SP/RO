@@ -69,7 +69,7 @@ const FinalFlow = ({ result, coo }) => {
             <svg
                 ref={svgRef}
                 width="100%"
-                height="600px"
+                height="500px"
                 style={{ border: '1px solid #ccc', cursor: 'move' }}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}

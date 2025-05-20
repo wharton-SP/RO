@@ -246,7 +246,7 @@ const GraphResult = ({ result, coo, finalF }) => {
             <svg
                 ref={svgRef}
                 width="100%"
-                height="600px"
+                height="500px"
                 className='bg-gray-950 rounded-md cursor-move border-2 border-gray-600'
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
