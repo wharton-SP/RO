@@ -140,6 +140,20 @@ const Graph = ({ sendData }) => {
         sendData(data);
     };
 
+    const getEdgeCoords = (x1, y1, x2, y2, r = 20) => {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const length = Math.sqrt(dx * dx + dy * dy);
+        const offsetX = (dx / length) * r;
+        const offsetY = (dy / length) * r;
+        return {
+            x1: x1 + offsetX,
+            y1: y1 + offsetY,
+            x2: x2 - offsetX,
+            y2: y2 - offsetY,
+        };
+    };
+
     return (
         <>
             <div style={{ marginBottom: '10px' }}>
@@ -167,23 +181,28 @@ const Graph = ({ sendData }) => {
                 </defs>
 
                 {edges.map((edge, i) => {
+
                     const fromNode = nodes.find(n => n.id === edge.from);
                     const toNode = nodes.find(n => n.id === edge.to);
+                    if (!fromNode || !toNode) return null;
+
+                    const { x1, y1, x2, y2 } = getEdgeCoords(fromNode.x, fromNode.y, toNode.x, toNode.y);
+
                     if (!fromNode || !toNode) return null;
                     const midX = (fromNode.x + toNode.x) / 2;
                     const midY = (fromNode.y + toNode.y) / 2;
                     return (
                         <g key={i} onDoubleClick={() => removeEdge(i)} style={{ cursor: 'pointer' }}>
                             <line
-                                x1={fromNode.x}
-                                y1={fromNode.y}
-                                x2={toNode.x}
-                                y2={toNode.y}
+                                x1={x1}
+                                y1={y1}
+                                x2={x2}
+                                y2={y2}
                                 stroke="black"
                                 strokeWidth="2"
                                 markerEnd="url(#arrow)"
                             />
-                            <text x={midX} y={midY - 5} textAnchor="middle" fill="red">{edge.weight}</text>
+                            <text x={midX} y={midY - 5} textAnchor="middle" fill="black">{edge.weight}</text>
                         </g>
                     );
                 })}
