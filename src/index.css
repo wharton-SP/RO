@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+*{
+  margin: 0;
+  color: whitesmoke;
+}
+
 .graph-container {
   position: absolute;
   width: 100%;

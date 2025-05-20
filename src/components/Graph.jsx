@@ -1,3 +1,4 @@
+import { FileDown, FileUp, Workflow } from 'lucide-react';
 import React, { useState, useRef } from 'react';
 
 const Graph = ({ sendData }) => {
@@ -157,30 +158,38 @@ const Graph = ({ sendData }) => {
     };
 
     return (
-        <div className="p-4 space-y-4">
-            <div className="flex flex-wrap items-center gap-2">
-                <button onClick={exportGraph} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                    Exporter le graphe
-                </button>
-                <button onClick={importGraph} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                    Importer un graphe
-                </button>
-                <button onClick={() => addSuperNode('α')} className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
-                    α
-                </button>
-                <button onClick={() => addSuperNode('ω')} className="px-3 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition">
-                    ω
-                </button>
-                <button onClick={calculateFlow} className="px-4 py-2 ml-auto bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
-                    Calculer Flot Max
-                </button>
+        <div className="p-4 space-y-4 flex flex-col gap-5">
+            <div className="relative flex justify-between items-center gap-2">
+                <div className='flex gap-5'>
+                    <button onClick={exportGraph} className="px-4 py-2 flex gap-2 bg-gray-800 text-white rounded-lg hover:bg-blue-700 transition">
+                        <FileUp /> <div>Exporter</div>
+                    </button>
+                    <button onClick={importGraph} className="px-4 py-2 flex gap-2 bg-gray-900 text-white rounded-lg hover:bg-green-700 transition">
+                        <FileDown /> <div>Importer</div>
+                    </button>
+                </div>
+
+                <div>
+                    <button onClick={calculateFlow} className="px-4 py-2 flex gap-2 ml-auto bg-green-700 text-white rounded-lg transition">
+                        <Workflow /> <div>Flot Max</div>
+                    </button>
+                </div>
+
+                <div className='absolute -bottom-17  left-5 flex gap-5'>
+                    <button onClick={() => addSuperNode('α')} className="px-4 py-2 bg-gray-700 w-12 rounded-lg font-bold text-xl hover:w-20 transition-all">
+                        α
+                    </button>
+                    <button onClick={() => addSuperNode('ω')} className="px-4 py-2 bg-gray-700 w-12 rounded-lg flont-bold text-xl hover:w-20 transition-all">
+                        ω
+                    </button>
+                </div>
             </div>
 
             <svg
                 ref={svgRef}
                 width="100%"
                 height="500px"
-                className="border border-gray-300 rounded-md shadow-sm bg-white"
+                className="rounded-md shadow-sm bg-gray-900 m-4"
                 style={{ cursor: 'crosshair' }}
                 onClick={addNode}
                 onMouseMove={handleMouseMove}
@@ -189,7 +198,7 @@ const Graph = ({ sendData }) => {
             >
                 <defs>
                     <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
-                        <path d="M0,0 L10,5 L0,10 Z" fill="black" />
+                        <path d="M0,0 L10,5 L0,10 Z" fill="white" />
                     </marker>
                 </defs>
 
@@ -209,11 +218,11 @@ const Graph = ({ sendData }) => {
                                 y1={y1}
                                 x2={x2}
                                 y2={y2}
-                                stroke="black"
+                                stroke="white"
                                 strokeWidth="2"
                                 markerEnd="url(#arrow)"
                             />
-                            <text x={midX} y={midY - 5} textAnchor="middle" fill="black" className="text-sm">{edge.weight}</text>
+                            <text x={midX} y={midY - 5} textAnchor="middle" fill="white" className="text-sm">{edge.weight}</text>
                         </g>
                     );
                 })}
