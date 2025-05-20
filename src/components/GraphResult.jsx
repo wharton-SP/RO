@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import formatMarkedPath from '../utils/formatting';
+import { ArrowBigLeftDash, ArrowBigRightDash, Pause, Play } from 'lucide-react';
 
 const GraphResult = ({ result, coo, finalF }) => {
     const [flow, setFlow] = useState({});
@@ -212,43 +213,41 @@ const GraphResult = ({ result, coo, finalF }) => {
         };
     };
 
-
     return (
-        <div className="mt-8">
-            <h2 className="text-lg font-semibold text-center mb-2">Résultat du flot( Flot Complet )</h2>
+        <div className="flex flex-col gap-4 p-4">
+            <h2 className="text-lg font-semibold text-center mb-2">Résultat du flot</h2>
 
-            <div className="flex justify-center gap-4 mb-4">
+            <div className="relative flex justify-center items-center gap-4">
                 <button
                     onClick={handleStepPrev}
                     className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
                     disabled={currentStep === 0 && subStep === 0}
                 >
-                    Étape précédente
+                    <ArrowBigLeftDash />
                 </button>
                 <button
                     onClick={handleStepNext}
                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                     disabled={currentStep === maxStep && subStep === 2 && visibleSigns.length === markedPath.length}
                 >
-                    Étape suivante
+                    <ArrowBigRightDash />
                 </button>
                 <button
                     onClick={() => setIsPlaying(!isPlaying)}
                     className={`px-4 py-2 rounded ${isPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white`}
                 >
-                    {isPlaying ? 'Pause' : 'Lecture auto'}
+                    {isPlaying ? <Pause /> : <Play />}
                 </button>
+                <p className={` ${isFinalDisplay ? "" : "hidden"} absolute drop-shadow-lg drop-shadow-green-500/50 -bottom-17 left-5 text-center text-sm text-green-700 bg-green-300 font-bold px-2 py-1 rounded-full cursor-default`}>
+                    Flot Complet
+                </p>
             </div>
-
-            <p className="text-center text-sm text-gray-600 mb-2">
-                {isFinalDisplay ? "Affichage du graphe complet — Flot Complet" : "Affichage du graphe complet"}
-            </p>
 
             <svg
                 ref={svgRef}
                 width="100%"
                 height="600px"
-                style={{ border: '1px solid #ccc', cursor: 'move' }}
+                className='bg-gray-950 rounded-md cursor-move border-2 border-gray-600'
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
             >
@@ -278,11 +277,11 @@ const GraphResult = ({ result, coo, finalF }) => {
                     const isMinEdge = minEdge && edge.from === minEdge[0] && edge.to === minEdge[1];
                     const isInPathMin = pathMin.some(p => p[0] === edge.from && p[1] === edge.to);
 
-                    let color = "black";
+                    let color = "white";
                     let strokeWidth = 2;
 
                     if (isFinalDisplay && visibleSigns.length < markedPath.length) {
-                        color = "black";
+                        color = "white";
                         strokeWidth = 2;
                     } else if (subStep === 0 && isMinEdge && !isFinalDisplay) {
                         color = "red";
@@ -316,7 +315,7 @@ const GraphResult = ({ result, coo, finalF }) => {
                                 x={midX}
                                 y={midY - 5}
                                 textAnchor="middle"
-                                fill={isSeenMinEdge(edge.from, edge.to) ? "red" : "black"}
+                                fill={isSeenMinEdge(edge.from, edge.to) ? "red" : "white"}
                                 fontWeight={isSeenMinEdge(edge.from, edge.to) ? "bold" : "normal"}
                             >
                                 {edge.weight}

@@ -31,7 +31,7 @@ const Home = () => {
     }, [resultFlow]);
 
     return (
-        <div className="App bg-gray-950 min-h-screen">
+        <div className="App bg-gray-950 min-h-screen text-gray-100">
             <h1 className="text-xl font-bold text-center my-4">Graphe Pondéré Interactif</h1>
             <Graph sendData={handleData} />
             <GraphResult result={resultFlow} coo={coo} finalF={setFinalDisplay} />
