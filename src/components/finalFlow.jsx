@@ -64,6 +64,9 @@ const FinalFlow = ({ result, coo }) => {
 
     return (
         <div className="p-4">
+            <div className='w-full relative'>
+                <div className='absolute -bottom-12 left-5 text-blue-600 bg-blue-300 w-max px-2 py-1 rounded-full text-sm drop-shadow-lg drop-shadow-blue-500'>Flot Complet</div>
+            </div>
             <svg
                 ref={svgRef}
                 width="100%"
