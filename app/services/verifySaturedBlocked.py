@@ -36,3 +36,24 @@ def isBlocked(path, satured_edges, path_blocked, blocked_edges):
                 path_blocked.append(path)
     
     return blocked_edges, path_blocked
+
+def finalSaturedEdge(graph, flow_graph):
+    """
+    Compare les arcs du graphe original avec ceux du flow_graph pour déterminer
+    les arcs saturés (flot == capacité).
+
+    :param graph: liste d'arcs du graphe original, sous forme [(u, v, capacité), ...]
+    :param flow_graph: liste d'arcs avec flot actuel, sous forme [(u, v, flot), ...]
+    :return: liste des arcs saturés [(u, v, capacité)]
+    """
+    saturated_edges = []
+
+    # Création d’un dictionnaire pour accéder rapidement au flot par (u, v)
+    flow_dict = {(u, v): f for (u, v, f) in flow_graph}
+
+    for (u, v, capacity) in graph:
+        flow = flow_dict.get((u, v), 0)
+        if flow == capacity:
+            saturated_edges.append((u, v, capacity))
+
+    return saturated_edges

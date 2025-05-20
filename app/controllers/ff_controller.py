@@ -2,8 +2,10 @@ from app.services.findMinEdge import minEdge
 from app.services.bfs import pathThroughSpecificEdge
 from app.services.updateGraph import updateGraph, update_flow_graph
 from app.services.mark import find_augmenting_path
+from app.services.verifySaturedBlocked import finalSaturedEdge
 
 def save_step(flow_graph, step_list, step_set, satured_edges, blocked_edges, min_edge=None, path_min=None):
+    print("Enregistrement de l'étape...")
     flow_state = tuple(flow_graph)
     if flow_state not in step_set:
         step_data = {
@@ -51,6 +53,7 @@ def fordFulkerson(graphOriginal):
         if not pathPassMin:
             print("🚫 Chemin bloqué pour l'arête min. Blocage de l'arête.")
             blocked_edges.add(min_edge)
+            save_step(flow_graph, step, step_set, satured_edges, blocked_edges, min_edge=min_edge)
             continue
                     
         path_has_saturated = any((u, v, 0) in satured_edges for (u, v, c) in pathPassMin)
@@ -61,6 +64,8 @@ def fordFulkerson(graphOriginal):
             print("Chemin bloquée :", path_blocked)
             print("******************************************")
             blocked_edges.add(min_edge)
+            
+            # Enregistrer l'étape avec flow inchangé mais min_edge et path_min renseignés            
             continue
         
         print("---------------------------------------------------------")
@@ -123,7 +128,12 @@ def fordFulkerson(graphOriginal):
     print("---------------------------------------------------------")
     print("Flot final :", flow_graph)
     print("---------------------------------------------------------")
-    print("Étapes :", etapes_dict)
+    print("Étapes :")
+    for i, etape in enumerate(etapes_dict, 1):
+        print(f"Étape {i} :", etape)
+    print("---------------------------------------------------------")
+    final_saturated = finalSaturedEdge(graph, flow_graph)
+    print("Arcs saturés finaux :", final_saturated)
     print("---------------------------------------------------------")
     print("Fin de l'algorithme Ford-Fulkerson")
     
@@ -134,5 +144,7 @@ def fordFulkerson(graphOriginal):
         "arcBloque": list(blocked_edges),
         "cheminMarque": marked_path_list,
         "flotFinal": flow_graph,
-        "etapes": etapes_dict
+        "etapes": etapes_dict,
+        "arcSatureFinal": final_saturated
     }
+
