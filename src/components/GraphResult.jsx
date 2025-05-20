@@ -43,13 +43,21 @@ const GraphResult = ({ result, coo }) => {
     }, [result, coo]);
 
     useEffect(() => {
+        const isFinal = currentStep === maxStep && subStep === 2;
+
+        if (isFinal && visibleSigns.length === markedPath.length) {
+            return;
+        }
+
         if (subStep === 2) {
             setFlow(formatData(result.etapes[currentStep].graph));
         }
-        if (!(currentStep === maxStep && subStep === 2)) {
+
+        if (!isFinal) {
             setVisibleSigns([]);
         }
-    }, [subStep, currentStep, result, maxStep]);
+    }, [subStep, currentStep, result, maxStep, visibleSigns.length, markedPath.length]);
+
 
     useEffect(() => {
         if (isPlaying) {
@@ -266,13 +274,16 @@ const GraphResult = ({ result, coo }) => {
                     let color = "black";
                     let strokeWidth = 2;
 
-                    if (subStep === 0 && isMinEdge) {
+                    if (isFinalDisplay && visibleSigns.length < markedPath.length) {
+                        color = "black";
+                        strokeWidth = 2;
+                    } else if (subStep === 0 && isMinEdge && !isFinalDisplay ) {
                         color = "red";
                         strokeWidth = 4;
-                    } else if (subStep === 1 && (isMinEdge || isInPathMin)) {
+                    } else if (subStep === 1 && (isMinEdge || isInPathMin) && !isFinalDisplay ) {
                         color = isMinEdge ? "red" : "green";
                         strokeWidth = isMinEdge ? 4 : 3;
-                    } else if (subStep === 2) {
+                    } else if (subStep === 2 && !isFinalDisplay ) {
                         if (isMinEdge) {
                             color = "red";
                             strokeWidth = 4;
@@ -281,6 +292,7 @@ const GraphResult = ({ result, coo }) => {
                             strokeWidth = 3;
                         }
                     }
+
 
                     return (
                         <g key={i}>
