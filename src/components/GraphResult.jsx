@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import formatMarkedPath from '../utils/formatting';
 
-const GraphResult = ({ result, coo }) => {
+const GraphResult = ({ result, coo, finalF }) => {
     const [flow, setFlow] = useState({});
     const [currentStep, setCurrentStep] = useState(0);
     const [subStep, setSubStep] = useState(0);
@@ -58,7 +58,6 @@ const GraphResult = ({ result, coo }) => {
         }
     }, [subStep, currentStep, result, maxStep, visibleSigns.length, markedPath.length]);
 
-
     useEffect(() => {
         if (isPlaying) {
             intervalRef.current = setInterval(() => {
@@ -110,7 +109,6 @@ const GraphResult = ({ result, coo }) => {
                 setVisibleSigns(prev => [...prev, markedPath[prev.length]]);
                 return;
             }
-
         }
 
         const etape = result.etapes[currentStep];
@@ -164,6 +162,15 @@ const GraphResult = ({ result, coo }) => {
     const handleMouseUp = () => setDraggingNode(null);
     const handleNodeMouseDown = (id) => setDraggingNode(id);
 
+    useEffect(() => {
+        const isFinal = currentStep === maxStep && subStep === 2;
+        const allSignsShown = visibleSigns.length === markedPath.length;
+
+        if (isFinal && allSignsShown && markedPath.length > 0) {
+            finalF(true)
+        }
+    }, [currentStep, subStep, visibleSigns.length, markedPath.length, maxStep, finalF]);
+
     if (nodes.length === 0) {
         return <p className="text-center text-gray-500 mt-4">Aucun graphe à afficher.</p>;
     }
@@ -174,7 +181,6 @@ const GraphResult = ({ result, coo }) => {
     const pathMin = currentEtape.path_min || [];
     const isFinalDisplay = currentStep === maxStep && subStep === 2;
 
-    // ➕ Ajout de cette fonction dérivée
     const getSeenMinEdges = () => {
         const seen = [];
         for (let i = 0; i <= currentStep; i++) {
@@ -205,6 +211,7 @@ const GraphResult = ({ result, coo }) => {
             y2: y2 - offsetY,
         };
     };
+
 
     return (
         <div className="mt-8">
@@ -277,13 +284,13 @@ const GraphResult = ({ result, coo }) => {
                     if (isFinalDisplay && visibleSigns.length < markedPath.length) {
                         color = "black";
                         strokeWidth = 2;
-                    } else if (subStep === 0 && isMinEdge && !isFinalDisplay ) {
+                    } else if (subStep === 0 && isMinEdge && !isFinalDisplay) {
                         color = "red";
                         strokeWidth = 4;
-                    } else if (subStep === 1 && (isMinEdge || isInPathMin) && !isFinalDisplay ) {
+                    } else if (subStep === 1 && (isMinEdge || isInPathMin) && !isFinalDisplay) {
                         color = isMinEdge ? "red" : "green";
                         strokeWidth = isMinEdge ? 4 : 3;
-                    } else if (subStep === 2 && !isFinalDisplay ) {
+                    } else if (subStep === 2 && !isFinalDisplay) {
                         if (isMinEdge) {
                             color = "red";
                             strokeWidth = 4;

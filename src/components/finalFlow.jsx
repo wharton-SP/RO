@@ -15,8 +15,6 @@ const FinalFlow = ({ result, coo }) => {
             weight: parseInt(edge[2], 10),
         }));
     };
-
-
     useEffect(() => {
 
         setSaturedEdges(formatData(result.arcSatureFinal))

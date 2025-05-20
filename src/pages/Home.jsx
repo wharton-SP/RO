@@ -7,12 +7,16 @@ import sendData from '../utils/Flow';
 const Home = () => {
     const [resultFlow, setResultFlow] = useState({});
     const [coo, setCoo] = useState({});
+    const [isFinalGraph, setIsFinalGraph] = useState(false)
 
+    const setFinalDisplay = (bool) => {
+        setIsFinalGraph(bool)
+    }
 
     const handleData = async (data) => {
         try {
             console.log("Données envoyées :", data);
-            
+
             const flow = await sendData(data);
             setResultFlow(flow);
             setCoo(data.nodes);
@@ -30,8 +34,10 @@ const Home = () => {
         <div className="App">
             <h1 className="text-xl font-bold text-center my-4">Graphe Pondéré Interactif</h1>
             <Graph sendData={handleData} />
-            <GraphResult result={resultFlow} coo={coo} />
-            <FinalFlow result={resultFlow} coo={coo} />
+            <GraphResult result={resultFlow} coo={coo} finalF={setFinalDisplay} />
+            {isFinalGraph &&(
+                <FinalFlow result={resultFlow} coo={coo}/>
+            )}
         </div>
     );
 };
