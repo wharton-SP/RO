@@ -63,14 +63,12 @@ const FinalFlow = ({ result, coo }) => {
     };
 
     return (
-        <div className="mt-8">
-            <h2 className="text-lg font-semibold text-center mb-2">Flot Maximal</h2>
-
+        <div className="p-4">
             <svg
                 ref={svgRef}
                 width="100%"
                 height="500px"
-                style={{ border: '1px solid #ccc', cursor: 'move' }}
+                className='bg-gray-950 rounded-md cursor-move border-2 border-gray-600'
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
             >
@@ -84,7 +82,7 @@ const FinalFlow = ({ result, coo }) => {
                         orient="auto"
                         markerUnits="userSpaceOnUse"
                     >
-                        <path d="M0,0 L4,2 L0,4 Z" fill="black" />
+                        <path d="M0,0 L4,2 L0,4 Z" fill="white" />
                     </marker>
                 </defs>
 
@@ -97,7 +95,7 @@ const FinalFlow = ({ result, coo }) => {
                     const midX = (fromNode.x + toNode.x) / 2;
                     const midY = (fromNode.y + toNode.y) / 2;
 
-                    let color = "black";
+                    let color = "white";
                     let strokeWidth = 2;
 
 
@@ -119,7 +117,7 @@ const FinalFlow = ({ result, coo }) => {
                                 fill={
                                     saturedEdges.some(se => se.from === edge.from && se.to === edge.to)
                                         ? "red"
-                                        : "black"
+                                        : "white"
                                 }
                             >
                                 {edge.weight}
@@ -148,7 +146,7 @@ const FinalFlow = ({ result, coo }) => {
             <div className="mt-4 flex justify-center gap-8 text-sm text-gray-700">
                 <div><span className="inline-block w-4 h-4 bg-red-600 rounded-full mr-2"></span> Arête min_edge</div>
                 <div><span className="inline-block w-4 h-4 bg-green-600 rounded-full mr-2"></span> Chemin minimal</div>
-                <div><span className="inline-block w-4 h-4 bg-black rounded-full mr-2"></span> Autres arêtes</div>
+                <div><span className="inline-block w-4 h-4 bg-white rounded-full mr-2"></span> Autres arêtes</div>
             </div>
         </div>
     );
