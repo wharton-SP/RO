@@ -215,7 +215,7 @@ const GraphResult = ({ result, coo, finalF }) => {
 
     return (
         <div className="mt-8">
-            <h2 className="text-lg font-semibold text-center mb-2">Résultat du flot maximal</h2>
+            <h2 className="text-lg font-semibold text-center mb-2">Résultat du flot( Flot Complet )</h2>
 
             <div className="flex justify-center gap-4 mb-4">
                 <button

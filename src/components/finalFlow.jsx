@@ -64,7 +64,7 @@ const FinalFlow = ({ result, coo }) => {
 
     return (
         <div className="mt-8">
-            <h2 className="text-lg font-semibold text-center mb-2">Résultat du flot maximal</h2>
+            <h2 className="text-lg font-semibold text-center mb-2">Flot Maximal</h2>
 
             <svg
                 ref={svgRef}
