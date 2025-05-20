@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Graph from '../components/Graph';
 import GraphResult from '../components/GraphResult';
+import FinalFlow from '../components/finalFlow';
 import sendData from '../utils/Flow';
 
 const Home = () => {
@@ -30,6 +31,7 @@ const Home = () => {
             <h1 className="text-xl font-bold text-center my-4">Graphe Pondéré Interactif</h1>
             <Graph sendData={handleData} />
             <GraphResult result={resultFlow} coo={coo} />
+            <FinalFlow result={resultFlow} coo={coo} />
         </div>
     );
 };
