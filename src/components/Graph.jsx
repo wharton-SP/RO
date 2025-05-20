@@ -71,7 +71,9 @@ const Graph = ({ sendData }) => {
         }
     };
 
-    const handleNodeClick = (id) => {
+    const handleNodeClick = (id, event) => {
+        if (!event.shiftKey) return;
+
         if (!selectedNode) {
             setSelectedNode(id);
         } else {
@@ -155,20 +157,31 @@ const Graph = ({ sendData }) => {
     };
 
     return (
-        <>
-            <div style={{ marginBottom: '10px' }}>
-                <button onClick={exportGraph}>Exporter le graphe</button>
-                <button onClick={importGraph} style={{ marginLeft: '10px' }}>Importer un graphe</button>
-                <button onClick={() => addSuperNode('α')}>α</button>
-                <button onClick={() => addSuperNode('ω')}>ω</button>
-                <button onClick={calculateFlow} style={{ marginLeft: '10px' }} >Calculer Flot Max</button>
+        <div className="p-4 space-y-4">
+            <div className="flex flex-wrap items-center gap-2">
+                <button onClick={exportGraph} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    Exporter le graphe
+                </button>
+                <button onClick={importGraph} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                    Importer un graphe
+                </button>
+                <button onClick={() => addSuperNode('α')} className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+                    α
+                </button>
+                <button onClick={() => addSuperNode('ω')} className="px-3 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition">
+                    ω
+                </button>
+                <button onClick={calculateFlow} className="px-4 py-2 ml-auto bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                    Calculer Flot Max
+                </button>
             </div>
 
             <svg
                 ref={svgRef}
                 width="100%"
-                height="600px"
-                style={{ border: '1px solid #ccc', cursor: 'crosshair' }}
+                height="500px"
+                className="border border-gray-300 rounded-md shadow-sm bg-white"
+                style={{ cursor: 'crosshair' }}
                 onClick={addNode}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
@@ -181,18 +194,16 @@ const Graph = ({ sendData }) => {
                 </defs>
 
                 {edges.map((edge, i) => {
-
                     const fromNode = nodes.find(n => n.id === edge.from);
                     const toNode = nodes.find(n => n.id === edge.to);
                     if (!fromNode || !toNode) return null;
 
                     const { x1, y1, x2, y2 } = getEdgeCoords(fromNode.x, fromNode.y, toNode.x, toNode.y);
-
-                    if (!fromNode || !toNode) return null;
                     const midX = (fromNode.x + toNode.x) / 2;
                     const midY = (fromNode.y + toNode.y) / 2;
+
                     return (
-                        <g key={i} onDoubleClick={() => removeEdge(i)} style={{ cursor: 'pointer' }}>
+                        <g key={i} onDoubleClick={() => removeEdge(i)} className="cursor-pointer">
                             <line
                                 x1={x1}
                                 y1={y1}
@@ -202,7 +213,7 @@ const Graph = ({ sendData }) => {
                                 strokeWidth="2"
                                 markerEnd="url(#arrow)"
                             />
-                            <text x={midX} y={midY - 5} textAnchor="middle" fill="black">{edge.weight}</text>
+                            <text x={midX} y={midY - 5} textAnchor="middle" fill="black" className="text-sm">{edge.weight}</text>
                         </g>
                     );
                 })}
@@ -214,7 +225,7 @@ const Graph = ({ sendData }) => {
                         onMouseDown={() => handleNodeMouseDown(node.id)}
                         onClick={(e) => {
                             e.stopPropagation();
-                            handleNodeClick(node.id);
+                            handleNodeClick(node.id, e);
                         }}
                         onDoubleClick={(e) => {
                             e.stopPropagation();
@@ -225,17 +236,17 @@ const Graph = ({ sendData }) => {
                             e.stopPropagation();
                             renameNode(node.id);
                         }}
-                        style={{ cursor: 'pointer' }}
+                        className="cursor-pointer"
                     >
                         {selectedNode === node.id && (
                             <circle r="24" fill="none" stroke="yellow" strokeWidth="3" />
                         )}
-                        <circle r="20" fill="#1e90ff" />
-                        <text x="0" y="5" textAnchor="middle" fill="white">{node.id}</text>
+                        <circle r="20" fill="#2563eb" /> {/* bleu Tailwind 500 */}
+                        <text x="0" y="5" textAnchor="middle" fill="white" className="text-sm font-semibold">{node.id}</text>
                     </g>
                 ))}
             </svg>
-        </>
+        </div>
     );
 };
 
