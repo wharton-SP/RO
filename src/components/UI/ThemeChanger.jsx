@@ -1,29 +1,19 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 
 const ThemeChanger = () => {
-
-    const [darkTheme, setDarkTheme] = useState(false)
+    const [darkTheme, setDarkTheme] = useState(false);
 
     const handleChange = (event) => {
-        const isChechecked = event.target.checked;
-
-        if (isChechecked) {
-            setDarkTheme(true)
-            console.log("Dark");
-
-        } else {
-            setDarkTheme(false)
-            console.log("Light");
-
-        }
-
+        const isChecked = event.target.checked;
+        setDarkTheme(isChecked);
+        console.log(isChecked ? "Dark" : "Light");
+        localStorage.setItem("darkTheme", isChecked.toString());
     };
 
     useEffect(() => {
-
-        
-
-    }, [darkTheme])
+        const storedTheme = localStorage.getItem("darkTheme");
+        setDarkTheme(storedTheme === "true");
+    }, []);
 
     return (
         <label className="flex cursor-pointer gap-2">
@@ -38,10 +28,15 @@ const ThemeChanger = () => {
                 strokeLinecap="round"
                 strokeLinejoin="round">
                 <circle cx="12" cy="12" r="5" />
-                <path
-                    d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
+                <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
             </svg>
-            <input type="checkbox" value="dim" checked={darkTheme} className="toggle theme-controller" id="themeC" onChange={handleChange} />
+            <input
+                type="checkbox"
+                value="dim"
+                checked={darkTheme}
+                className="toggle theme-controller"
+                onChange={handleChange}
+            />
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"
@@ -55,7 +50,7 @@ const ThemeChanger = () => {
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
             </svg>
         </label>
-    )
-}
+    );
+};
 
-export default ThemeChanger
+export default ThemeChanger;
