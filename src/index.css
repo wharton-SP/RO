@@ -1,9 +1,12 @@
 @import "tailwindcss";
+
 @plugin "daisyui" {
-  themes: all;
+
+  themes: winter --default, dim --prefersdark;
+
 }
 
-*{
+* {
   margin: 0;
 }
 
@@ -60,7 +63,7 @@
   border-left-color: #666;
   transform: translateY(-50%);
   z-index: 15;
-  filter: drop-shadow(0 0 1px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.2));
 }
 
 .weight {
