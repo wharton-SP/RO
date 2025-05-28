@@ -2,7 +2,7 @@
 
 @plugin "daisyui" {
 
-  themes: winter --default, dim --prefersdark;
+  themes: emerald --default, dim --prefersdark;
 
 }
 

@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 
-const ThemeChanger = () => {
+const ThemeChanger = ({ handleThemeChange }) => {
     const [darkTheme, setDarkTheme] = useState(false);
 
     const handleChange = (event) => {
         const isChecked = event.target.checked;
         setDarkTheme(isChecked);
-        console.log(isChecked ? "Dark" : "Light");
+        handleThemeChange(isChecked ? "Dark" : "Light");
         localStorage.setItem("darkTheme", isChecked.toString());
     };
 
     useEffect(() => {
         const storedTheme = localStorage.getItem("darkTheme");
         setDarkTheme(storedTheme === "true");
+        handleThemeChange(storedTheme === "true" ? "Dark" : "Light")
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

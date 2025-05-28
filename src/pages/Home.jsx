@@ -4,7 +4,7 @@ import GraphResult from '../components/GraphResult';
 import FinalFlow from '../components/finalFlow';
 import sendData from '../utils/Flow';
 
-const Home = () => {
+const Home = ({ theme }) => {
     const [resultFlow, setResultFlow] = useState({});
     const [coo, setCoo] = useState({});
     const [isFinalGraph, setIsFinalGraph] = useState(false)
@@ -31,12 +31,12 @@ const Home = () => {
     }, [resultFlow]);
 
     return (
-        <div className="App bg-gray-950 min-h-screen text-gray-100">
+        <div className="App min-h-screen">
             <h1 className="text-xl font-bold text-center my-4">Graphe Pondéré Interactif</h1>
-            <Graph sendData={handleData} />
+            <Graph sendData={handleData} theme={theme} />
             <GraphResult result={resultFlow} coo={coo} finalF={setFinalDisplay} />
-            {isFinalGraph &&(
-                <FinalFlow result={resultFlow} coo={coo}/>
+            {isFinalGraph && (
+                <FinalFlow result={resultFlow} coo={coo} />
             )}
         </div>
     );

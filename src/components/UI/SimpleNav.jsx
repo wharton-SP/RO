@@ -1,11 +1,12 @@
 import React from 'react'
 import ThemeChanger from './ThemeChanger'
+import { Link } from 'react-router-dom'
 
-const SimpleNav = () => {
+const SimpleNav = ({ handleThemeChange }) => {
     return (
         <div className="navbar bg-base-100 shadow-sm flex justify-between">
-            <a className="btn btn-ghost text-xl">RO | Flot Max</a>
-            <ThemeChanger />
+            <Link to="/" className="text-xl">RO | Flot Max</Link>
+            <ThemeChanger handleThemeChange={handleThemeChange} />
         </div>
     )
 }

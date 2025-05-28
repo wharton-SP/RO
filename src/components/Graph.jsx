@@ -1,13 +1,15 @@
 import { FileDown, FileUp, Workflow } from 'lucide-react';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
-const Graph = ({ sendData }) => {
+const Graph = ({ sendData, theme }) => {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
     const [draggingNode, setDraggingNode] = useState(null);
     const svgRef = useRef(null);
     const [selectedNode, setSelectedNode] = useState(null);
     const nextIdRef = useRef(0);
+    const [bg, setBg] = useState("bg-white")
+    const [arrowColor, setArrowColor] = useState("black");
 
     const MIN_DISTANCE = 50;
 
@@ -157,29 +159,43 @@ const Graph = ({ sendData }) => {
         };
     };
 
+    useEffect(() => {       
+
+        if (theme === "Dark") {
+            console.log("d");
+            setBg("bg-gray-700")
+            setArrowColor("white")
+        }
+        else {
+            console.log("l");
+            setBg("bg-gray-200")
+            setArrowColor("black")
+        }
+    }, [theme])
+
     return (
         <div className="p-4 space-y-4 flex flex-col gap-5">
             <div className="relative flex justify-between items-center gap-2">
                 <div className='flex gap-5'>
-                    <button onClick={exportGraph} className="px-4 py-2 flex gap-2 bg-gray-800 text-white rounded-lg hover:bg-blue-700 transition">
+                    <button onClick={exportGraph} className="btn btn-neutral">
                         <FileUp /> <div>Exporter</div>
                     </button>
-                    <button onClick={importGraph} className="px-4 py-2 flex gap-2 bg-gray-900 text-white rounded-lg hover:bg-green-700 transition">
+                    <button onClick={importGraph} className="btn btn-neutral">
                         <FileDown /> <div>Importer</div>
                     </button>
                 </div>
 
                 <div>
-                    <button onClick={calculateFlow} className="px-4 py-2 flex gap-2 ml-auto bg-green-700 text-white rounded-lg transition">
+                    <button onClick={calculateFlow} className="btn btn-accent">
                         <Workflow /> <div>Flot Max</div>
                     </button>
                 </div>
 
                 <div className='absolute -bottom-17  left-5 flex gap-5'>
-                    <button onClick={() => addSuperNode('α')} className="px-4 py-2 bg-gray-700 w-12 rounded-lg font-bold text-xl hover:w-20 transition-all">
+                    <button onClick={() => addSuperNode('α')} className="btn btn-primary">
                         α
                     </button>
-                    <button onClick={() => addSuperNode('ω')} className="px-4 py-2 bg-gray-700 w-12 rounded-lg flont-bold text-xl hover:w-20 transition-all">
+                    <button onClick={() => addSuperNode('ω')} className="btn btn-primary">
                         ω
                     </button>
                 </div>
@@ -189,7 +205,7 @@ const Graph = ({ sendData }) => {
                 ref={svgRef}
                 width="100%"
                 height="500px"
-                className="rounded-md shadow-sm bg-gray-900 m-4"
+                className={`${bg} rounded-md shadow-sm m-4`}
                 style={{ cursor: 'crosshair' }}
                 onClick={addNode}
                 onMouseMove={handleMouseMove}
@@ -198,7 +214,7 @@ const Graph = ({ sendData }) => {
             >
                 <defs>
                     <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
-                        <path d="M0,0 L10,5 L0,10 Z" fill="white" />
+                        <path d="M0,0 L10,5 L0,10 Z" fill={arrowColor} />
                     </marker>
                 </defs>
 
@@ -218,11 +234,11 @@ const Graph = ({ sendData }) => {
                                 y1={y1}
                                 x2={x2}
                                 y2={y2}
-                                stroke="white"
+                                stroke={arrowColor}
                                 strokeWidth="2"
                                 markerEnd="url(#arrow)"
                             />
-                            <text x={midX} y={midY - 5} textAnchor="middle" fill="white" className="text-sm">{edge.weight}</text>
+                            <text x={midX} y={midY - 5} textAnchor="middle" fill={arrowColor} className="text-sm">{edge.weight}</text>
                         </g>
                     );
                 })}
