@@ -1,7 +1,8 @@
-import { FileDown, FileUp, Workflow } from 'lucide-react';
+import { BrushCleaning, FileDown, FileUp, Workflow } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 
 const Graph = ({ sendData, theme }) => {
+
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
     const [draggingNode, setDraggingNode] = useState(null);
@@ -159,7 +160,20 @@ const Graph = ({ sendData, theme }) => {
         };
     };
 
-    useEffect(() => {       
+    const clear = () => {
+        setNodes([]);
+        setEdges([]);
+    }
+
+    useEffect(() => {
+
+        if (nodes.length === 0) {
+            sendData(null);
+        }
+
+    }, [nodes])
+
+    useEffect(() => {
 
         if (theme === "Dark") {
             setBg("bg-gray-700")
@@ -174,13 +188,16 @@ const Graph = ({ sendData, theme }) => {
     return (
         <div className="p-4 space-y-4 flex flex-col gap-5">
             <div className="relative flex justify-between items-center gap-2">
-                <div className='flex gap-5'>
+                <div className='flex gap-5 items-center'>
                     <button onClick={exportGraph} className="btn btn-neutral">
                         <FileUp /> <div>Exporter</div>
                     </button>
                     <button onClick={importGraph} className="btn btn-neutral">
                         <FileDown /> <div>Importer</div>
                     </button>
+                    <div className='btn btn-warning' onClick={clear}>
+                        <div><BrushCleaning /></div>
+                    </div>
                 </div>
 
                 <div>
