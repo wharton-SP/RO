@@ -171,6 +171,7 @@ const Graph = ({ sendData, theme }) => {
             sendData(null);
         }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [nodes])
 
     useEffect(() => {
