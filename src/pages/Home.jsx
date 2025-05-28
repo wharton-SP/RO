@@ -36,7 +36,7 @@ const Home = ({ theme }) => {
             <Graph sendData={handleData} theme={theme} />
             <GraphResult result={resultFlow} coo={coo} finalF={setFinalDisplay} theme={theme} />
             {isFinalGraph && (
-                <FinalFlow result={resultFlow} coo={coo} />
+                <FinalFlow result={resultFlow} coo={coo} theme={theme} />
             )}
         </div>
     );

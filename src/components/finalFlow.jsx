@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const FinalFlow = ({ result, coo }) => {
+const FinalFlow = ({ result, coo, theme }) => {
     const [flow, setFlow] = useState({});
     const [nodes, setNodes] = useState([]);
     const svgRef = useRef(null);
     const [draggingNode, setDraggingNode] = useState(null);
     const [saturedEdges, setSaturedEdges] = useState({});
+    const [bg, setBg] = useState("bg-white")
+    const [arrowColor, setArrowColor] = useState("black");
 
     const formatData = (data) => {
         if (!Array.isArray(data)) return [];
@@ -15,6 +17,21 @@ const FinalFlow = ({ result, coo }) => {
             weight: parseInt(edge[2], 10),
         }));
     };
+
+    useEffect(() => {
+
+        if (theme === "Dark") {
+            console.log("d");
+            setBg("bg-gray-700")
+            setArrowColor("white")
+        }
+        else {
+            console.log("l");
+            setBg("bg-gray-200")
+            setArrowColor("black")
+        }
+    }, [theme])
+
     useEffect(() => {
 
         setSaturedEdges(formatData(result.arcSatureFinal))
@@ -71,7 +88,7 @@ const FinalFlow = ({ result, coo }) => {
                 ref={svgRef}
                 width="100%"
                 height="500px"
-                className='bg-gray-950 rounded-md cursor-move border-2 border-gray-600'
+                className={`${bg} rounded-md cursor-move border-2`}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
             >
@@ -85,7 +102,7 @@ const FinalFlow = ({ result, coo }) => {
                         orient="auto"
                         markerUnits="userSpaceOnUse"
                     >
-                        <path d="M0,0 L4,2 L0,4 Z" fill="white" />
+                        <path d="M0,0 L4,2 L0,4 Z" fill={arrowColor} />
                     </marker>
                 </defs>
 
@@ -98,7 +115,7 @@ const FinalFlow = ({ result, coo }) => {
                     const midX = (fromNode.x + toNode.x) / 2;
                     const midY = (fromNode.y + toNode.y) / 2;
 
-                    let color = "white";
+                    let color = arrowColor;
                     let strokeWidth = 2;
 
 
@@ -120,7 +137,7 @@ const FinalFlow = ({ result, coo }) => {
                                 fill={
                                     saturedEdges.some(se => se.from === edge.from && se.to === edge.to)
                                         ? "red"
-                                        : "white"
+                                        : arrowColor
                                 }
                             >
                                 {edge.weight}
