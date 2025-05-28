@@ -15,8 +15,6 @@ const Home = ({ theme }) => {
 
     const handleData = async (data) => {
         try {
-            console.log("Données envoyées :", data);
-
             const flow = await sendData(data);
             setResultFlow(flow);
             setCoo(data.nodes);
@@ -26,8 +24,6 @@ const Home = ({ theme }) => {
     };
 
     useEffect(() => {
-        console.log("Flow result updated:", resultFlow);
-
     }, [resultFlow]);
 
     return (

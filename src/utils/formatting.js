@@ -3,10 +3,7 @@ const formatMarkedPath = (path) => {
 
     const mark = [];
 
-    console.log(path);
-
     path.forEach((p) => {
-        console.log(p);
 
         for (let i = 0; i < p.length; i++) {
             const [from, to] = p[i][0];
@@ -28,8 +25,6 @@ const formatMarkedPath = (path) => {
             item.e !== "" &&
             self.findIndex((m) => m.e === item.e && m.s === item.s) === index
     );
-
-    console.log(uniqueMark);
 
     return uniqueMark;
 };

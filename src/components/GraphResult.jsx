@@ -33,12 +33,10 @@ const GraphResult = ({ result, coo, finalF, theme }) => {
     useEffect(() => {
 
         if (theme === "Dark") {
-            console.log("d");
             setBg("bg-gray-700")
             setArrowColor("white")
         }
         else {
-            console.log("l");
             setBg("bg-gray-200")
             setArrowColor("black")
         }
