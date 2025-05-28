@@ -3,6 +3,7 @@ import Graph from '../components/Graph';
 import GraphResult from '../components/GraphResult';
 import FinalFlow from '../components/finalFlow';
 import sendData from '../utils/Flow';
+import Waiting from "./../assets/images/waiting.gif"
 
 const Home = ({ theme }) => {
     const [resultFlow, setResultFlow] = useState({});
@@ -49,11 +50,14 @@ const Home = ({ theme }) => {
                     )}
                 </>
             ) : (
-                <div className='h-10 w-screen' >
-                    <div className="skeleton h-full w-full flex items-center justify-center gap-2">
-                        <span>En Attente de Graph à Afficher </span>
-                        <span className="loading loading-dots loading-md"></span>
+                <div className='absolute right-0 bottom-12 w-max' >
+                    <div className="tooltip translate-y-36 w-full">
+                        <div className="tooltip-content -translate-x-10">
+                            <div className="animate-bounce  text-accent text-xl font-black">J'attend le graph</div>
+                        </div>
+                        <button className="opacity-0 w-full h-20">Hover me</button>
                     </div>
+                    <img src={Waiting} alt="Une personne qui attent" />
                 </div>
             )}
 
