@@ -369,12 +369,6 @@ const GraphResult = ({ result, coo, finalF, theme }) => {
                     );
                 })}
             </svg>
-
-            <div className="mt-4 flex justify-center gap-8 text-sm text-gray-700">
-                <div><span className="inline-block w-4 h-4 bg-red-600 rounded-full mr-2"></span> Arête min_edge</div>
-                <div><span className="inline-block w-4 h-4 bg-green-600 rounded-full mr-2"></span> Chemin minimal</div>
-                <div><span className="inline-block w-4 h-4 bg-white rounded-full mr-2"></span> Autres arêtes</div>
-            </div>
         </div>
     );
 };
