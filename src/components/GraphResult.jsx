@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import formatMarkedPath from '../utils/formatting';
 import { ArrowBigLeftDash, ArrowBigRightDash, Pause, Play } from 'lucide-react';
 
-const GraphResult = ({ result, coo, finalF }) => {
+const GraphResult = ({ result, coo, finalF, theme }) => {
     const [flow, setFlow] = useState({});
     const [currentStep, setCurrentStep] = useState(0);
     const [subStep, setSubStep] = useState(0);
@@ -14,6 +14,8 @@ const GraphResult = ({ result, coo, finalF }) => {
     const [draggingNode, setDraggingNode] = useState(null);
     const [markedPath, setMarkedPath] = useState([]);
     const [visibleSigns, setVisibleSigns] = useState([]);
+    const [bg, setBg] = useState("bg-white")
+    const [arrowColor, setArrowColor] = useState("black");
 
     const formatData = (data) => {
         return data.map(edge => ({
@@ -27,6 +29,20 @@ const GraphResult = ({ result, coo, finalF }) => {
         return (!etape.min_edge || etape.min_edge.length === 0) &&
             (!etape.path_min || etape.path_min.length === 0);
     };
+
+    useEffect(() => {
+
+        if (theme === "Dark") {
+            console.log("d");
+            setBg("bg-gray-700")
+            setArrowColor("white")
+        }
+        else {
+            console.log("l");
+            setBg("bg-gray-200")
+            setArrowColor("black")
+        }
+    }, [theme])
 
     useEffect(() => {
         if (result.etapes) {
@@ -247,7 +263,7 @@ const GraphResult = ({ result, coo, finalF }) => {
                 ref={svgRef}
                 width="100%"
                 height="500px"
-                className='bg-gray-950 rounded-md cursor-move border-2 border-gray-600'
+                className={`${bg} rounded-md cursor-move border-2`}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
             >
@@ -261,7 +277,7 @@ const GraphResult = ({ result, coo, finalF }) => {
                         orient="auto"
                         markerUnits="userSpaceOnUse"
                     >
-                        <path d="M0,0 L4,2 L0,4 Z" fill="white" />
+                        <path d="M0,0 L4,2 L0,4 Z" fill={arrowColor} />
                     </marker>
                 </defs>
 
@@ -277,11 +293,11 @@ const GraphResult = ({ result, coo, finalF }) => {
                     const isMinEdge = minEdge && edge.from === minEdge[0] && edge.to === minEdge[1];
                     const isInPathMin = pathMin.some(p => p[0] === edge.from && p[1] === edge.to);
 
-                    let color = "white";
+                    let color = arrowColor;
                     let strokeWidth = 2;
 
                     if (isFinalDisplay && visibleSigns.length < markedPath.length) {
-                        color = "white";
+                        color = arrowColor;
                         strokeWidth = 2;
                     } else if (subStep === 0 && isMinEdge && !isFinalDisplay) {
                         color = "red";
@@ -314,7 +330,7 @@ const GraphResult = ({ result, coo, finalF }) => {
                                 x={midX}
                                 y={midY - 5}
                                 textAnchor="middle"
-                                fill={isSeenMinEdge(edge.from, edge.to) ? "red" : "white"}
+                                fill={isSeenMinEdge(edge.from, edge.to) ? "red" : arrowColor}
                                 fontWeight={isSeenMinEdge(edge.from, edge.to) ? "bold" : "normal"}
                             >
                                 {edge.weight}
@@ -336,7 +352,7 @@ const GraphResult = ({ result, coo, finalF }) => {
                             style={{ cursor: 'pointer' }}
                         >
                             <circle r="20" fill={node.special ? "#32cd32" : "#1e90ff"} />
-                            <text x="0" y="5" textAnchor="middle" fill="white">{node.id}</text>
+                            <text x="0" y="5" textAnchor="middle" fill="white" >{node.id}</text>
                             {mark && (
                                 <text
                                     x="0"

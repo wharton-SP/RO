@@ -34,7 +34,7 @@ const Home = ({ theme }) => {
         <div className="App min-h-screen">
             <h1 className="text-xl font-bold text-center my-4">Graphe Pondéré Interactif</h1>
             <Graph sendData={handleData} theme={theme} />
-            <GraphResult result={resultFlow} coo={coo} finalF={setFinalDisplay} />
+            <GraphResult result={resultFlow} coo={coo} finalF={setFinalDisplay} theme={theme} />
             {isFinalGraph && (
                 <FinalFlow result={resultFlow} coo={coo} />
             )}
