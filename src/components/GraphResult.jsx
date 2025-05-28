@@ -231,30 +231,30 @@ const GraphResult = ({ result, coo, finalF, theme }) => {
 
     return (
         <div className="flex flex-col gap-4 p-4">
-            <h2 className="text-lg font-semibold text-center mb-2">Résultat du flot</h2>
+            <h2 className="text-lg font-semibold text-center mb-2">Résultat du flot : Flot Complet</h2>
 
             <div className="relative flex justify-center items-center gap-4">
                 <button
                     onClick={handleStepPrev}
-                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                    className="btn btn-secondary"
                     disabled={currentStep === 0 && subStep === 0}
                 >
                     <ArrowBigLeftDash />
                 </button>
                 <button
                     onClick={handleStepNext}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className="btn btn-secondary"
                     disabled={currentStep === maxStep && subStep === 2 && visibleSigns.length === markedPath.length}
                 >
                     <ArrowBigRightDash />
                 </button>
                 <button
                     onClick={() => setIsPlaying(!isPlaying)}
-                    className={`px-4 py-2 rounded ${isPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white`}
+                    className={`px-4 py-2 rounded ${isPlaying ? 'btn btn-primary' : 'btn btn-accent'}`}
                 >
                     {isPlaying ? <Pause /> : <Play />}
                 </button>
-                <p className={` ${isFinalDisplay ? "" : "hidden"} absolute drop-shadow-lg drop-shadow-green-500/50 -bottom-17 left-5 text-center text-sm text-green-700 bg-green-300 font-bold px-2 py-1 rounded-full cursor-default`}>
+                <p className={` ${isFinalDisplay ? "" : "hidden"} absolute drop-shadow-lg drop-shadow-secondary -bottom-17 left-5 text-center text-sm text-secondary-content bg-secondary font-bold px-2 py-1 rounded-full cursor-default`}>
                     Flot Complet
                 </p>
             </div>
