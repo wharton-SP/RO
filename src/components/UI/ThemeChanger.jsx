@@ -34,7 +34,7 @@ const ThemeChanger = ({ handleThemeChange }) => {
             </svg>
             <input
                 type="checkbox"
-                value="dim"
+                value="forest"
                 checked={darkTheme}
                 className="toggle theme-controller"
                 onChange={handleChange}

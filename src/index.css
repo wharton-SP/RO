@@ -2,7 +2,7 @@
 
 @plugin "daisyui" {
 
-  themes: emerald --default, dim --prefersdark;
+  themes: cupcake --default, forest --prefersdark;
 
 }
 
