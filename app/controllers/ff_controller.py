@@ -4,146 +4,100 @@ from app.services.updateGraph import updateGraph, update_flow_graph
 from app.services.mark import find_augmenting_path
 from app.services.verifySaturedBlocked import finalSaturedEdge
 
-def save_step(flow_graph, step_list, step_set, satured_edges, blocked_edges, min_edge=None, path_min=None):
-    print("Enregistrement de l'étape...")
-    flow_state = tuple(flow_graph)
-    if flow_state not in step_set:
-        step_data = {
-            "graph": list(flow_graph),
-            "satured": list(satured_edges),
-            "blocked": list(blocked_edges),
-            "min_edge": min_edge,
-            "path_min": path_min
-        }
-        step_list.append(step_data)
-        step_set.add(flow_state)
-
+from collections import OrderedDict
 
 def fordFulkerson(graphOriginal):
-    
-    graph = [(edge["source"], edge["target"], edge["capacity"]) for edge in graphOriginal]
-    
-    flow_graph = [(u, v, 0) for (u, v, c) in graph]
+    graph = [(e["source"], e["target"], e["capacity"]) for e in graphOriginal]
+    flow_graph = [(u, v, 0) for u, v, c in graph]
     residual_graph = graph.copy()
+
     satured_edges = set()
     blocked_edges = set()
-    path_blocked = set()
-    maximum_flow = 0
-    step = []
-    step_set = set()
+    step_list = [{"type": "graph_update", "graph": list(flow_graph)}]
     marked_path_list = []
+    max_flow = 0
 
-    # Étape initiale
-    save_step(flow_graph, step, step_set, satured_edges, blocked_edges)
-    
     while True:
-        print("111111111111111111111111111111111111111111111111")
-        print("111111111111111111111111111111111111111111111111")
-        available_edges = [edge for edge in residual_graph 
-                        if edge not in blocked_edges and edge[2] > 0]
-        
+        available_edges = [e for e in residual_graph if e not in blocked_edges and e[2] > 0]
         if not available_edges:
-            print("🚫 Plus d'arête disponible. Fin.")
             break
-            
-        min_edge = minEdge(available_edges)
-        print("Arête minimale trouvée:", min_edge)
-        
-        pathPassMin = pathThroughSpecificEdge(residual_graph, min_edge, satured_edges)
-        if not pathPassMin:
-            print("🚫 Chemin bloqué pour l'arête min. Blocage de l'arête.")
-            blocked_edges.add(min_edge)
-            save_step(flow_graph, step, step_set, satured_edges, blocked_edges, min_edge=min_edge)
+
+        min_e = minEdge(available_edges)
+        if min_e is None:
+            continue  # Skip if no edge found
+
+        step_list.append({"type": "min_edge", "edge": list(min_e)})
+
+        path = pathThroughSpecificEdge(residual_graph, min_e, satured_edges)
+        if not path:
+            blocked_edges.add(min_e)
+            step_list.append({
+                "type": "graph_update",
+                "graph": list(flow_graph),
+                "satured": list(satured_edges),
+                "blocked": list(blocked_edges)
+            })
             continue
-                    
-        path_has_saturated = any((u, v, 0) in satured_edges for (u, v, c) in pathPassMin)
-        if path_has_saturated:
-            print("🚫 Chemin contient des arêtes saturées. Blocage.")
-            path_blocked.add(tuple(pathPassMin))
-            print("******************************************")
-            print("Chemin bloquée :", path_blocked)
-            print("******************************************")
-            blocked_edges.add(min_edge)
-            
-            # Enregistrer l'étape avec flow inchangé mais min_edge et path_min renseignés            
-            continue
-        
-        print("---------------------------------------------------------")
-        print("Chemin passant par minimale :", pathPassMin)
-        print("---------------------------------------------------------")
-        
-        min_capacity = min_edge[2]
-        print("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
-        print("Flow :", flow_graph)
-        print("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
-        
-        flow_graph, residual_graph = updateGraph(flow_graph, residual_graph, min_capacity, pathPassMin)
-        
-        for u, v, c in pathPassMin:
-            for i, (ru, rv, rc) in enumerate(residual_graph):
+
+        step_list.append({"type": "path_min", "path": list(path)})
+
+        min_capacity = min_e[2]
+        flow_graph, residual_graph = updateGraph(flow_graph, residual_graph, min_capacity, path)
+
+        for u, v, c in path:
+            for ru, rv, rc in residual_graph:
                 if (ru, rv) == (u, v) and rc == 0:
                     satured_edges.add((u, v, 0))
-        
-        maximum_flow += min_capacity
-        print("///////////////////////////////////////////////")
-        print("Flow :", flow_graph)
-        print("//////////////////////////////////////////////")
-        
-        save_step(flow_graph, step, step_set, satured_edges, blocked_edges, min_edge=min_edge, path_min=pathPassMin)
 
-    fully_flow = flow_graph
-    
+        max_flow += min_capacity
+        step_list.append({
+            "type": "graph_update",
+            "graph": list(flow_graph),
+            "satured": list(satured_edges),
+            "blocked": list(blocked_edges)
+        })
+
     while True:
         marked_path = find_augmenting_path(flow_graph, satured_edges)
-        
         if marked_path is None:
-            print("🚫 Plus de chemin augmentant. Fin.")
             break
-        else: 
-            marked_path_list.append(marked_path)
-            cap_back = [val for (_, signe, val) in marked_path if signe == '-']
-            
-            min_back = min(cap_back) if cap_back else 0
-            maximum_flow += min_back
-            
-            flow_graph = update_flow_graph(marked_path, flow_graph, min_back)
-            
-            
 
-    # Construction du dictionnaire des étapes
-    etapes_dict = [etape for etape in step]
+        cap_back = [v for _, s, v in marked_path if s == '-']
+        min_back = min(cap_back) if cap_back else 0
+        max_flow += min_back
 
+        flow_graph = update_flow_graph(marked_path, flow_graph, min_back)
 
-    print("---------------------------------------------------------")
-    print("Flot maximum :", maximum_flow)
-    print("---------------------------------------------------------")
-    print("Flot complet :", fully_flow) 
-    print("---------------------------------------------------------")
-    print("Arêtes saturées :", satured_edges)
-    print("---------------------------------------------------------")
-    print("Arêtes bloquées :", blocked_edges)
-    print("---------------------------------------------------------") 
-    print("Chemins marqués :", marked_path_list)
-    print("---------------------------------------------------------")
-    print("Flot final :", flow_graph)
-    print("---------------------------------------------------------")
-    print("Étapes :")
-    for i, etape in enumerate(etapes_dict, 1):
-        print(f"Étape {i} :", etape)
-    print("---------------------------------------------------------")
-    final_saturated = finalSaturedEdge(graph, flow_graph)
-    print("Arcs saturés finaux :", final_saturated)
-    print("---------------------------------------------------------")
-    print("Fin de l'algorithme Ford-Fulkerson")
-    
+        # Calculate node markings for THIS path only
+        current_node_markings = {}
+        for (u, v), sign, _ in marked_path:
+            if u[0] not in current_node_markings:
+                current_node_markings[u[0]] = sign
+            if v[0] not in current_node_markings:
+                current_node_markings[v[0]] = sign
+                
+
+        print("Mark-2 : ", current_node_markings)
+
+        marked_path_list.append({
+            "type": "marked_path",
+            "path": [(u, s, c) for u, s, c in marked_path],
+            "graph": list(flow_graph),
+            "node_markings": current_node_markings
+        })
+
+        print("mark : ", marked_path)
+        print("node_markings (current path): ", current_node_markings)
+
+    final_satured = finalSaturedEdge(graph, flow_graph)
+
     return {
-        "flotMax": maximum_flow,
-        "flotComplet": fully_flow,
-        "arcSature": list(satured_edges),
-        "arcBloque": list(blocked_edges),
-        "cheminMarque": marked_path_list,
-        "flotFinal": flow_graph,
-        "etapes": etapes_dict,
-        "arcSatureFinal": final_saturated
+        "steps": step_list,
+        "marked_paths": marked_path_list,  # Contains node_markings for each path
+        "final": {
+            "max_flow": max_flow,
+            "final_flow": list(flow_graph),
+            "final_satured": list(final_satured),
+            "blocked_edges": list(blocked_edges)
+        }
     }
-
