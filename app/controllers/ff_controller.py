@@ -76,13 +76,6 @@ def fordFulkerson(graphOriginal):
             if v[0] not in current_node_markings:
                 current_node_markings[v[0]] = sign
                 
-        ordered_markings = OrderedDict()
-        if 'α' in current_node_markings:
-            ordered_markings['α'] = current_node_markings['α']
-        for node in sorted(key for key in current_node_markings if key not in {'α', 'ω'}):
-            ordered_markings[node] = current_node_markings[node]
-        if 'ω' in current_node_markings:
-            ordered_markings['ω'] = current_node_markings['ω']
 
         print("Mark-2 : ", current_node_markings)
 
@@ -90,7 +83,7 @@ def fordFulkerson(graphOriginal):
             "type": "marked_path",
             "path": [(u, s, c) for u, s, c in marked_path],
             "graph": list(flow_graph),
-            "node_markings": dict(current_node_markings) 
+            "node_markings": current_node_markings
         })
 
         print("mark : ", marked_path)
