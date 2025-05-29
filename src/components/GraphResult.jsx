@@ -100,6 +100,7 @@ const GraphResult = ({ result, coo, theme }) => {
 
             setVisitedMinEdges(collectedMinEdges);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stepIndex, result, coo]);
 
     useEffect(() => {
