@@ -47,14 +47,14 @@ const Home = ({ theme }) => {
         <div className="App min-h-screen">
             <Graph sendData={handleData} theme={theme} />
 
-            {/* {showResult ? ( */}
+            {showResult ? (
             <>
                 <GraphResult result={resultFlow} coo={coo} finalF={setFinalDisplay} theme={theme} />
                 {isFinalGraph && (
                     <FinalFlow result={resultFlow} coo={coo} theme={theme} />
                 )}
             </>
-            {/* ) : (
+            ) : (
                 <div className='absolute right-0 bottom-12 w-max' >
                     <div className="tooltip translate-y-36 w-full">
                         <div className="tooltip-content -translate-x-10">
@@ -64,7 +64,7 @@ const Home = ({ theme }) => {
                     </div>
                     <img src={Waiting} alt="Une personne qui attent" />
                 </div>
-            )} */}
+            )}
 
         </div>
     );
