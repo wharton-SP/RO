@@ -130,7 +130,7 @@ const GraphResult = ({ result, coo, finalF, theme }) => {
     if (!result?.steps || !coo?.length) return <p className="text-center text-gray-500 mt-4">Chargement du graphe...</p>;
 
     return (
-        <div className='p-20 flex flex-col gap-5'>
+        <div className='px-20 py-5 flex flex-col gap-5'>
             <div className='relative flex items-center gap-4 justify-center'>
                 <button onClick={goToPreviousStep} className='btn btn-secondary'><ArrowBigLeftDash /></button>
                 <button onClick={togglePlay} className='btn btn-accent'>{isPlaying ? <Pause /> : <Play />}</button>

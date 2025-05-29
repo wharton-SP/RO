@@ -64,7 +64,7 @@ const FinalFlow = ({ result, coo, theme }) => {
     if (!result?.steps || !coo?.length) return <p className="text-center text-gray-500 mt-4">Chargement du graphe...</p>;
 
     return (
-        <div className='p-20 flex flex-col gap-5'>
+        <div className='px-20 py-5 flex flex-col gap-5'>
             <div>
                 <svg ref={svgRef} width="100%" height="500px" className={`${bg} rounded-md shadow-sm m-4`} style={{ cursor: 'grab' }} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
                     <defs>
