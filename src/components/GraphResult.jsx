@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { ArrowBigRightDash, ArrowBigLeftDash, Pause, Play } from 'lucide-react';
 import formatMarkedPath from '../utils/formatting';
 
 const GraphResult = ({ result, coo, theme }) => {
@@ -93,23 +94,23 @@ const GraphResult = ({ result, coo, theme }) => {
             }
             setVisitedMinEdges(collectedMinEdges);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stepIndex, result, coo]);
 
     useEffect(() => {
         if (stepIndex === steps.length - 1 && result?.marked_paths?.[0]?.node_markings) {
 
             const markings = formatMarkedPath(result.marked_paths[0].path);
-            
+
             console.log(formatMarkedPath(result.marked_paths[0].path));
-            
+
             setMarkingsToDisplay(markings);
             setMarkingIndex(-1);
         } else {
             setMarkingsToDisplay([]);
             setMarkingIndex(-1);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stepIndex, result]);
 
     useEffect(() => {
@@ -125,76 +126,78 @@ const GraphResult = ({ result, coo, theme }) => {
     if (!result?.steps || !coo?.length) return <p className="text-center text-gray-500 mt-4">Chargement du graphe...</p>;
 
     return (
-        <div className='p-20'>
-            <div className='flex items-center gap-4 justify-center mb-2'>
-                <button onClick={goToPreviousStep} className='btn btn-secondary'>⬅ Prev</button>
-                <button onClick={togglePlay} className='btn btn-accent'>{isPlaying ? "⏸ Pause" : "▶ Play"}</button>
-                <button onClick={goToNextStep} className='btn btn-secondary'>Next ➡</button>
-                <span className="text-sm font-medium">
-                    Étape {stepIndex + 1}{markingsToDisplay.length > 0 && markingIndex >= 0 ? ` + Marque ${markingIndex + 1}/${markingsToDisplay.length}` : ``}
+        <div className='p-20 flex flex-col gap-5'>
+            <div className='relative flex items-center gap-4 justify-center'>
+                <button onClick={goToPreviousStep} className='btn btn-secondary'><ArrowBigLeftDash /></button>
+                <button onClick={togglePlay} className='btn btn-accent'>{isPlaying ? <Pause /> : <Play />}</button>
+                <button onClick={goToNextStep} className='btn btn-secondary'><ArrowBigRightDash /></button>
+                <span className={`${(stepIndex === steps.length - 1) ? "opacity-100" : "opacity-0"} absolute -bottom-18 left-10 text-sm font-medium text-accent-content bg-accent px-2 py-1 rounded-full drop-shadow-lg drop-shadow-accent transition-all`}>
+                    Flot Complet
                 </span>
             </div>
 
-            <svg ref={svgRef} width="100%" height="500px" className={`${bg} rounded-md shadow-sm m-4`} style={{ cursor: 'grab' }} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
-                <defs>
-                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
-                        <path d="M0,0 L10,5 L0,10 Z" fill={arrowColor} />
-                    </marker>
-                </defs>
+            <div>
+                <svg ref={svgRef} width="100%" height="500px" className={`${bg} rounded-md shadow-sm m-4`} style={{ cursor: 'grab' }} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
+                            <path d="M0,0 L10,5 L0,10 Z" fill={arrowColor} />
+                        </marker>
+                    </defs>
 
-                {flow.map((edge, i) => {
-                    const fromNode = nodes.find(n => n.id === edge.from);
-                    const toNode = nodes.find(n => n.id === edge.to);
-                    if (!fromNode || !toNode) return null;
+                    {flow.map((edge, i) => {
+                        const fromNode = nodes.find(n => n.id === edge.from);
+                        const toNode = nodes.find(n => n.id === edge.to);
+                        if (!fromNode || !toNode) return null;
 
-                    const { x1, y1, x2, y2 } = getEdgeCoords(fromNode.x, fromNode.y, toNode.x, toNode.y);
-                    const midX = (fromNode.x + toNode.x) / 2;
-                    const midY = (fromNode.y + toNode.y) / 2;
+                        const { x1, y1, x2, y2 } = getEdgeCoords(fromNode.x, fromNode.y, toNode.x, toNode.y);
+                        const midX = (fromNode.x + toNode.x) / 2;
+                        const midY = (fromNode.y + toNode.y) / 2;
 
-                    let color = arrowColor;
+                        let color = arrowColor;
 
-                    if (visitedMinEdges.some(([f, t]) => f === edge.from && t === edge.to)) {
-                        color = "#f87171"; // rouge pâle
-                    } else if (currentStep.type === "min_edge" && currentStep.edge?.[0] === edge.from && currentStep.edge?.[1] === edge.to) {
-                        color = "#f97316"; // orange
-                    }
-                    if (currentStep.type === "path_min" && currentStep.path?.some(([f, t]) => f === edge.from && t === edge.to)) {
-                        color = "#4ade80"; // vert pâle
-                    }
+                        if (visitedMinEdges.some(([f, t]) => f === edge.from && t === edge.to)) {
+                            color = "#f87171"; // rouge pâle
+                        } else if (currentStep.type === "min_edge" && currentStep.edge?.[0] === edge.from && currentStep.edge?.[1] === edge.to) {
+                            color = "#f97316"; // orange
+                        }
+                        if (currentStep.type === "path_min" && currentStep.path?.some(([f, t]) => f === edge.from && t === edge.to)) {
+                            color = "#4ade80"; // vert pâle
+                        }
 
-                    return (
-                        <g key={i} style={{ opacity: 0, animation: "fadeIn 0.4s ease forwards" }}>
-                            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth="2" markerEnd="url(#arrow)" />
-                            <text x={midX} y={midY - 5} textAnchor="middle" fill={color} className="text-sm">{edge.weight}</text>
+                        return (
+                            <g key={i} style={{ opacity: 0, animation: "fadeIn 0.4s ease forwards" }}>
+                                <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth="2" markerEnd="url(#arrow)" />
+                                <text x={midX} y={midY - 5} textAnchor="middle" fill={color} className="text-sm">{edge.weight}</text>
+                            </g>
+                        );
+                    })}
+
+                    {nodes.map((node) => (
+                        <g key={node.id} transform={`translate(${node.x},${node.y})`} onMouseDown={() => handleNodeMouseDown(node.id)} style={{ opacity: 0, animation: "fadeIn 0.4s ease forwards" }}>
+                            <circle r="20" fill="#2563eb" />
+                            <text x="0" y="5" textAnchor="middle" fill="white" className="text-sm font-semibold">{node.id}</text>
                         </g>
-                    );
-                })}
+                    ))}
 
-                {nodes.map((node) => (
-                    <g key={node.id} transform={`translate(${node.x},${node.y})`} onMouseDown={() => handleNodeMouseDown(node.id)} style={{ opacity: 0, animation: "fadeIn 0.4s ease forwards" }}>
-                        <circle r="20" fill="#2563eb" />
-                        <text x="0" y="5" textAnchor="middle" fill="white" className="text-sm font-semibold">{node.id}</text>
-                    </g>
-                ))}
-
-                {markingsToDisplay.slice(0, markingIndex + 1).map(({ id, sign }) => {
-                    const node = nodes.find(n => n.id === id);
-                    if (!node) return null;
-                    return (
-                        <text
-                            key={`mark-${id}`}
-                            x={node.x}
-                            y={node.y - 30}
-                            textAnchor="middle"
-                            fill={sign === '+' ? '#22c55e' : '#ef4444'}
-                            fontSize="16"
-                            style={{ opacity: 0, animation: "fadeIn 0.3s ease forwards" }}
-                        >
-                            {sign}
-                        </text>
-                    );
-                })}
-            </svg>
+                    {markingsToDisplay.slice(0, markingIndex + 1).map(({ id, sign }) => {
+                        const node = nodes.find(n => n.id === id);
+                        if (!node) return null;
+                        return (
+                            <text
+                                key={`mark-${id}`}
+                                x={node.x}
+                                y={node.y - 30}
+                                textAnchor="middle"
+                                fill={sign === '+' ? '#22c55e' : '#ef4444'}
+                                fontSize="16"
+                                style={{ opacity: 0, animation: "fadeIn 0.3s ease forwards" }}
+                            >
+                                {sign}
+                            </text>
+                        );
+                    })}
+                </svg>
+            </div>
 
             <style>{`
                 @keyframes fadeIn {
