@@ -187,7 +187,7 @@ const Graph = ({ sendData, theme }) => {
     }, [theme])
 
     return (
-        <div className="p-4 space-y-4 flex flex-col gap-5">
+        <div className="px-20 py-5 space-y-4 flex flex-col gap-5">
             <div className="relative flex justify-between items-center gap-2">
                 <div className='flex gap-5 items-center'>
                     <button onClick={exportGraph} className="btn btn-neutral">
