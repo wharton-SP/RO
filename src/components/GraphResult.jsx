@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ArrowBigRightDash, ArrowBigLeftDash, Pause, Play } from 'lucide-react';
 import formatMarkedPath from '../utils/formatting';
 
-const GraphResult = ({ result, coo, theme }) => {
+const GraphResult = ({ result, coo, finalF, theme }) => {
     const [nodes, setNodes] = useState([]);
     const [flow, setFlow] = useState([]);
     const [stepIndex, setStepIndex] = useState(0);
@@ -112,6 +112,10 @@ const GraphResult = ({ result, coo, theme }) => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stepIndex, result]);
+
+    useEffect(() => {
+        if (stepIndex === steps.length - 1) finalF(true)
+    }, [finalF, stepIndex, steps.length])
 
     useEffect(() => {
         if (theme === "Dark") {
