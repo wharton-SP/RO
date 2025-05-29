@@ -1,221 +1,36 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { ArrowBigRightDash, ArrowBigLeftDash, Pause, Play } from 'lucide-react';
 import formatMarkedPath from '../utils/formatting';
-import { ArrowBigLeftDash, ArrowBigRightDash, Pause, Play } from 'lucide-react';
 
 const GraphResult = ({ result, coo, finalF, theme }) => {
-    const [flow, setFlow] = useState({});
-    const [currentStep, setCurrentStep] = useState(0);
-    const [subStep, setSubStep] = useState(0);
-    const [maxStep, setMaxStep] = useState(0);
     const [nodes, setNodes] = useState([]);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const intervalRef = useRef(null);
-    const svgRef = useRef(null);
+    const [flow, setFlow] = useState([]);
+    const [stepIndex, setStepIndex] = useState(0);
     const [draggingNode, setDraggingNode] = useState(null);
-    const [markedPath, setMarkedPath] = useState([]);
-    const [visibleSigns, setVisibleSigns] = useState([]);
-    const [bg, setBg] = useState("bg-white")
+    const [visitedMinEdges, setVisitedMinEdges] = useState([]);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [markingsToDisplay, setMarkingsToDisplay] = useState([]);
+    const [markingIndex, setMarkingIndex] = useState(-1);
+
+    const svgRef = useRef(null);
     const [arrowColor, setArrowColor] = useState("black");
+    const [bg, setBg] = useState("bg-white");
 
-    const formatData = (data) => {
-        return data.map(edge => ({
-            from: edge[0],
-            to: edge[1],
-            weight: parseInt(edge[2], 10),
-        }));
-    };
+    const steps = result?.steps || [];
+    const currentStep = steps[stepIndex] || {};
 
-    const shouldSkipIntermediateSteps = (etape) => {
-        return (!etape.min_edge || etape.min_edge.length === 0) &&
-            (!etape.path_min || etape.path_min.length === 0);
-    };
-
-    useEffect(() => {
-
-        if (theme === "Dark") {
-            setBg("bg-gray-700")
-            setArrowColor("white")
-        }
-        else {
-            setBg("bg-gray-200")
-            setArrowColor("black")
-        }
-    }, [theme])
-
-    useEffect(() => {
-        if (result.etapes) {
-            setFlow(formatData(result.etapes[0].graph));
-            setNodes(coo);
-            setMaxStep(result.etapes.length - 1);
-            setCurrentStep(0);
-            setSubStep(shouldSkipIntermediateSteps(result.etapes[0]) ? 2 : 0);
-            setVisibleSigns([]);
-        }
-
-        if (result.cheminMarque) {
-            setMarkedPath(formatMarkedPath(result.cheminMarque));
-        }
-    }, [result, coo]);
-
-    useEffect(() => {
-        const isFinal = currentStep === maxStep && subStep === 2;
-
-        if (isFinal && visibleSigns.length === markedPath.length) {
-            return;
-        }
-
-        if (subStep === 2) {
-            setFlow(formatData(result.etapes[currentStep].graph));
-        }
-
-        if (!isFinal) {
-            setVisibleSigns([]);
-        }
-    }, [subStep, currentStep, result, maxStep, visibleSigns.length, markedPath.length]);
-
-    useEffect(() => {
-        if (isPlaying) {
-            intervalRef.current = setInterval(() => {
-                setSubStep(prevSub => {
-                    const etape = result.etapes[currentStep];
-                    if (shouldSkipIntermediateSteps(etape)) {
-                        setSubStep(2);
-                        setCurrentStep(prevStep => {
-                            if (prevStep < maxStep) {
-                                const nextEtape = result.etapes[prevStep + 1];
-                                setSubStep(shouldSkipIntermediateSteps(nextEtape) ? 2 : 0);
-                                return prevStep + 1;
-                            } else {
-                                clearInterval(intervalRef.current);
-                                setIsPlaying(false);
-                                return prevStep;
-                            }
-                        });
-                        return 2;
-                    } else if (prevSub < 2) {
-                        return prevSub + 1;
-                    } else {
-                        setSubStep(0);
-                        setCurrentStep(prevStep => {
-                            if (prevStep < maxStep) {
-                                const nextEtape = result.etapes[prevStep + 1];
-                                setSubStep(shouldSkipIntermediateSteps(nextEtape) ? 2 : 0);
-                                return prevStep + 1;
-                            } else {
-                                clearInterval(intervalRef.current);
-                                setIsPlaying(false);
-                                return prevStep;
-                            }
-                        });
-                        return 0;
-                    }
-                });
-            }, 1000);
-        } else {
-            clearInterval(intervalRef.current);
-        }
-
-        return () => clearInterval(intervalRef.current);
-    }, [currentStep, isPlaying, maxStep, result.etapes]);
-
-    const handleStepNext = () => {
-        if (currentStep === maxStep && subStep === 2) {
-            if (visibleSigns.length < markedPath.length) {
-                setVisibleSigns(prev => [...prev, markedPath[prev.length]]);
-                return;
-            }
-        }
-
-        const etape = result.etapes[currentStep];
-        if (shouldSkipIntermediateSteps(etape)) {
-            if (currentStep < maxStep) {
-                const nextEtape = result.etapes[currentStep + 1];
-                setCurrentStep(currentStep + 1);
-                setSubStep(shouldSkipIntermediateSteps(nextEtape) ? 2 : 0);
-            }
-        } else {
-            if (subStep < 2) {
-                setSubStep(subStep + 1);
-            } else if (currentStep < maxStep) {
-                const nextEtape = result.etapes[currentStep + 1];
-                setCurrentStep(currentStep + 1);
-                setSubStep(shouldSkipIntermediateSteps(nextEtape) ? 2 : 0);
-            }
-        }
-    };
-
-    const handleStepPrev = () => {
-        if (currentStep === maxStep && subStep === 2) {
-            if (visibleSigns.length > 0) {
-                setVisibleSigns(prev => prev.slice(0, -1));
-                return;
-            }
-        }
-
-        if (subStep > 0) {
-            setSubStep(subStep - 1);
-        } else if (currentStep > 0) {
-            const prevEtape = result.etapes[currentStep - 1];
-            setCurrentStep(currentStep - 1);
-            setSubStep(shouldSkipIntermediateSteps(prevEtape) ? 2 : 2);
-        }
-    };
-
+    const handleNodeMouseDown = (id) => setDraggingNode(id);
     const handleMouseMove = (e) => {
         if (!draggingNode) return;
         const rect = svgRef.current.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-
-        setNodes(prevNodes =>
-            prevNodes.map(n =>
-                n.id === draggingNode ? { ...n, x, y } : n
-            )
-        );
+        setNodes(nodes.map(n => n.id === draggingNode ? { ...n, x, y } : n));
     };
-
     const handleMouseUp = () => setDraggingNode(null);
-    const handleNodeMouseDown = (id) => setDraggingNode(id);
-
-    useEffect(() => {
-        const isFinal = currentStep === maxStep && subStep === 2;
-        const allSignsShown = visibleSigns.length === markedPath.length;
-
-        if (isFinal && allSignsShown && markedPath.length > 0) {
-            finalF(true)
-        }
-    }, [currentStep, subStep, visibleSigns.length, markedPath.length, maxStep, finalF]);
-
-    if (nodes.length === 0) {
-        return <p className="text-center text-gray-500 mt-4">Aucun graphe à afficher.</p>;
-    }
-
-    const edges = flow || [];
-    const currentEtape = result.etapes[currentStep];
-    const minEdge = currentEtape.min_edge;
-    const pathMin = currentEtape.path_min || [];
-    const isFinalDisplay = currentStep === maxStep && subStep === 2;
-
-    const getSeenMinEdges = () => {
-        const seen = [];
-        for (let i = 0; i <= currentStep; i++) {
-            const etape = result.etapes[i];
-            if (etape.min_edge && etape.min_edge.length > 0) {
-                const key = `${etape.min_edge[0]},${etape.min_edge[1]}`;
-                if (!seen.includes(key)) {
-                    seen.push(key);
-                }
-            }
-        }
-        return seen;
-    };
-
-    const seenMinEdges = getSeenMinEdges();
-    const isSeenMinEdge = (from, to) => seenMinEdges.includes(`${from},${to}`);
 
     const getEdgeCoords = (x1, y1, x2, y2, r = 20) => {
-        const dx = x2 - x1;
-        const dy = y2 - y1;
+        const dx = x2 - x1, dy = y2 - y1;
         const length = Math.sqrt(dx * dx + dy * dy);
         const offsetX = (dx / length) * r;
         const offsetY = (dy / length) * r;
@@ -227,146 +42,172 @@ const GraphResult = ({ result, coo, finalF, theme }) => {
         };
     };
 
-    return (
-        <div className="flex flex-col gap-4 p-4">
-            <h2 className="text-lg font-semibold text-center mb-2">Résultat du flot : Flot Complet</h2>
+    const formatData = (data) =>
+        Array.isArray(data) ? data.map(edge => ({ from: edge[0], to: edge[1], weight: parseInt(edge[2], 10) })) : [];
 
-            <div className="relative flex justify-center items-center gap-4">
-                <button
-                    onClick={handleStepPrev}
-                    className="btn btn-secondary"
-                    disabled={currentStep === 0 && subStep === 0}
-                >
-                    <ArrowBigLeftDash />
-                </button>
-                <button
-                    onClick={handleStepNext}
-                    className="btn btn-secondary"
-                    disabled={currentStep === maxStep && subStep === 2 && visibleSigns.length === markedPath.length}
-                >
-                    <ArrowBigRightDash />
-                </button>
-                <button
-                    onClick={() => setIsPlaying(!isPlaying)}
-                    className={`px-4 py-2 rounded ${isPlaying ? 'btn btn-primary' : 'btn btn-accent'}`}
-                >
-                    {isPlaying ? <Pause /> : <Play />}
-                </button>
-                <p className={` ${isFinalDisplay ? "" : "hidden"} absolute drop-shadow-lg drop-shadow-secondary -bottom-17 left-5 text-center text-sm text-secondary-content bg-secondary font-bold px-2 py-1 rounded-full cursor-default`}>
+    const goToNextStep = () => {
+        if (stepIndex < steps.length - 1) {
+            setStepIndex(prev => prev + 1);
+        } else if (stepIndex === steps.length - 1 && markingIndex < markingsToDisplay.length - 1) {
+            setMarkingIndex(prev => prev + 1);
+        }
+    };
+
+    const goToPreviousStep = () => {
+        if (markingIndex >= 0) {
+            setMarkingIndex(prev => prev - 1);
+        } else if (stepIndex > 0) {
+            setStepIndex(prev => prev - 1);
+        }
+    };
+
+    const togglePlay = () => setIsPlaying(!isPlaying);
+
+    useEffect(() => {
+        if (!isPlaying) return;
+        const interval = setInterval(() => {
+            if (stepIndex < steps.length - 1) {
+                setStepIndex(prev => prev + 1);
+            } else if (markingIndex < markingsToDisplay.length - 1) {
+                setMarkingIndex(prev => prev + 1);
+            } else {
+                setIsPlaying(false);
+            }
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [isPlaying, stepIndex, markingIndex, steps.length, markingsToDisplay.length]);
+
+    useEffect(() => {
+        if (result?.steps?.length && coo?.length) {
+            setNodes(coo);
+            if (currentStep.graph) setFlow(formatData(currentStep.graph));
+
+            const collectedMinEdges = [];
+            for (let i = 0; i <= stepIndex - 1; i++) {
+                const step = steps[i];
+                const next = steps[i + 1];
+                if (step?.type === "min_edge" && next?.type === "path_min" && Array.isArray(next.path)) {
+                    const [from, to] = step.edge;
+                    const found = next.path.some(([f, t]) => f === from && t === to);
+                    if (found) collectedMinEdges.push([from, to]);
+                }
+            }
+            setVisitedMinEdges(collectedMinEdges);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [stepIndex, result, coo]);
+
+    useEffect(() => {
+        if (stepIndex === steps.length - 1 && result?.marked_paths?.[0]?.node_markings) {
+
+            const markings = formatMarkedPath(result.marked_paths[0].path);
+
+            console.log(formatMarkedPath(result.marked_paths[0].path));
+
+            setMarkingsToDisplay(markings);
+            setMarkingIndex(-1);
+        } else {
+            setMarkingsToDisplay([]);
+            setMarkingIndex(-1);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [stepIndex, result]);
+
+    useEffect(() => {
+        if (stepIndex === steps.length - 1) finalF(true)
+    }, [finalF, stepIndex, steps.length])
+
+    useEffect(() => {
+        if (theme === "Dark") {
+            setBg("bg-gray-700");
+            setArrowColor("white");
+        } else {
+            setBg("bg-gray-200");
+            setArrowColor("black");
+        }
+    }, [theme]);
+
+    if (!result?.steps || !coo?.length) return <p className="text-center text-gray-500 mt-4">Chargement du graphe...</p>;
+
+    return (
+        <div className='px-20 py-5 flex flex-col gap-5'>
+            <div className='relative flex items-center gap-4 justify-center'>
+                <button onClick={goToPreviousStep} className='btn btn-secondary'><ArrowBigLeftDash /></button>
+                <button onClick={togglePlay} className='btn btn-accent'>{isPlaying ? <Pause /> : <Play />}</button>
+                <button onClick={goToNextStep} className='btn btn-secondary'><ArrowBigRightDash /></button>
+                <span className={`${(stepIndex === steps.length - 1) ? "opacity-100" : "opacity-0"} absolute -bottom-18 left-10 text-sm font-medium text-accent-content bg-accent px-2 py-1 rounded-full drop-shadow-lg drop-shadow-accent transition-all`}>
                     Flot Complet
-                </p>
+                </span>
             </div>
 
-            <svg
-                ref={svgRef}
-                width="100%"
-                height="500px"
-                className={`${bg} rounded-md cursor-move border-2`}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-            >
-                <defs>
-                    <marker
-                        id="arrow"
-                        markerWidth="4"
-                        markerHeight="4"
-                        refX="3"
-                        refY="2"
-                        orient="auto"
-                        markerUnits="userSpaceOnUse"
-                    >
-                        <path d="M0,0 L4,2 L0,4 Z" fill={arrowColor} />
-                    </marker>
-                </defs>
+            <div>
+                <svg ref={svgRef} width="100%" height="500px" className={`${bg} rounded-md shadow-sm m-4`} style={{ cursor: 'grab' }} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
+                            <path d="M0,0 L10,5 L0,10 Z" fill={arrowColor} />
+                        </marker>
+                    </defs>
 
-                {edges.map((edge, i) => {
-                    const fromNode = nodes.find(n => n.id === edge.from);
-                    const toNode = nodes.find(n => n.id === edge.to);
-                    if (!fromNode || !toNode) return null;
+                    {flow.map((edge, i) => {
+                        const fromNode = nodes.find(n => n.id === edge.from);
+                        const toNode = nodes.find(n => n.id === edge.to);
+                        if (!fromNode || !toNode) return null;
 
-                    const { x1, y1, x2, y2 } = getEdgeCoords(fromNode.x, fromNode.y, toNode.x, toNode.y);
-                    const midX = (fromNode.x + toNode.x) / 2;
-                    const midY = (fromNode.y + toNode.y) / 2;
+                        const { x1, y1, x2, y2 } = getEdgeCoords(fromNode.x, fromNode.y, toNode.x, toNode.y);
+                        const midX = (fromNode.x + toNode.x) / 2;
+                        const midY = (fromNode.y + toNode.y) / 2;
 
-                    const isMinEdge = minEdge && edge.from === minEdge[0] && edge.to === minEdge[1];
-                    const isInPathMin = pathMin.some(p => p[0] === edge.from && p[1] === edge.to);
+                        let color = arrowColor;
 
-                    let color = arrowColor;
-                    let strokeWidth = 2;
-
-                    if (isFinalDisplay && visibleSigns.length < markedPath.length) {
-                        color = arrowColor;
-                        strokeWidth = 2;
-                    } else if (subStep === 0 && isMinEdge && !isFinalDisplay) {
-                        color = "red";
-                        strokeWidth = 4;
-                    } else if (subStep === 1 && (isMinEdge || isInPathMin) && !isFinalDisplay) {
-                        color = isMinEdge ? "red" : "green";
-                        strokeWidth = isMinEdge ? 4 : 3;
-                    } else if (subStep === 2 && !isFinalDisplay) {
-                        if (isMinEdge) {
-                            color = "red";
-                            strokeWidth = 4;
-                        } else if (isInPathMin) {
-                            color = "green";
-                            strokeWidth = 3;
+                        if (visitedMinEdges.some(([f, t]) => f === edge.from && t === edge.to)) {
+                            color = "#f87171"; // rouge pâle
+                        } else if (currentStep.type === "min_edge" && currentStep.edge?.[0] === edge.from && currentStep.edge?.[1] === edge.to) {
+                            color = "#f97316"; // orange
                         }
-                    }
+                        if (currentStep.type === "path_min" && currentStep.path?.some(([f, t]) => f === edge.from && t === edge.to)) {
+                            color = "#4ade80"; // vert pâle
+                        }
 
-                    return (
-                        <g key={i}>
-                            <line
-                                x1={x1}
-                                y1={y1}
-                                x2={x2}
-                                y2={y2}
-                                stroke={color}
-                                strokeWidth={strokeWidth}
-                                markerEnd="url(#arrow)"
-                            />
+                        return (
+                            <g key={i} style={{ opacity: 0, animation: "fadeIn 0.4s ease forwards" }}>
+                                <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth="2" markerEnd="url(#arrow)" />
+                                <text x={midX} y={midY - 5} textAnchor="middle" fill={color} className="text-sm">{edge.weight}</text>
+                            </g>
+                        );
+                    })}
+
+                    {nodes.map((node) => (
+                        <g key={node.id} transform={`translate(${node.x},${node.y})`} onMouseDown={() => handleNodeMouseDown(node.id)} style={{ opacity: 0, animation: "fadeIn 0.4s ease forwards" }}>
+                            <circle r="20" fill="#2563eb" />
+                            <text x="0" y="5" textAnchor="middle" fill="white" className="text-sm font-semibold">{node.id}</text>
+                        </g>
+                    ))}
+
+                    {markingsToDisplay.slice(0, markingIndex + 1).map(({ id, sign }) => {
+                        const node = nodes.find(n => n.id === id);
+                        if (!node) return null;
+                        return (
                             <text
-                                x={midX}
-                                y={midY - 5}
+                                key={`mark-${id}`}
+                                x={node.x}
+                                y={node.y - 30}
                                 textAnchor="middle"
-                                fill={isSeenMinEdge(edge.from, edge.to) ? "red" : arrowColor}
-                                fontWeight={isSeenMinEdge(edge.from, edge.to) ? "bold" : "normal"}
+                                fill={sign === '+' ? '#22c55e' : '#ef4444'}
+                                fontSize="16"
+                                style={{ opacity: 0, animation: "fadeIn 0.3s ease forwards" }}
                             >
-                                {edge.weight}
+                                {sign}
                             </text>
-                        </g>
-                    );
-                })}
+                        );
+                    })}
+                </svg>
+            </div>
 
-                {nodes.map((node) => {
-                    const mark = isFinalDisplay
-                        ? visibleSigns.find(p => p.e === node.id)
-                        : null;
-
-                    return (
-                        <g
-                            key={node.id}
-                            transform={`translate(${node.x},${node.y})`}
-                            onMouseDown={() => handleNodeMouseDown(node.id)}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <circle r="20" fill={node.special ? "#32cd32" : "#1e90ff"} />
-                            <text x="0" y="5" textAnchor="middle" fill="white" >{node.id}</text>
-                            {mark && (
-                                <text
-                                    x="0"
-                                    y="-25"
-                                    textAnchor="middle"
-                                    fill={mark.s === '+' ? 'green' : 'red'}
-                                    fontWeight="bold"
-                                    fontSize="16"
-                                >
-                                    {mark.s}
-                                </text>
-                            )}
-                        </g>
-                    );
-                })}
-            </svg>
+            <style>{`
+                @keyframes fadeIn {
+                    to { opacity: 1; }
+                }
+            `}</style>
         </div>
     );
 };

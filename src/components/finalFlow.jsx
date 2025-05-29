@@ -1,71 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 const FinalFlow = ({ result, coo, theme }) => {
-    const [flow, setFlow] = useState({});
     const [nodes, setNodes] = useState([]);
-    const svgRef = useRef(null);
+    const [flow, setFlow] = useState([]);
+    const [saturatedEdges, setSaturatedEdges] = useState([]);
     const [draggingNode, setDraggingNode] = useState(null);
-    const [saturedEdges, setSaturedEdges] = useState({});
-    const [bg, setBg] = useState("bg-white")
+
+    const svgRef = useRef(null);
     const [arrowColor, setArrowColor] = useState("black");
+    const [bg, setBg] = useState("bg-white");
 
-    const formatData = (data) => {
-        if (!Array.isArray(data)) return [];
-        return data.map(edge => ({
-            from: edge[0],
-            to: edge[1],
-            weight: parseInt(edge[2], 10),
-        }));
-    };
-
-    useEffect(() => {
-
-        if (theme === "Dark") {
-            setBg("bg-gray-700")
-            setArrowColor("white")
-        }
-        else {
-            setBg("bg-gray-200")
-            setArrowColor("black")
-        }
-    }, [theme])
-
-    useEffect(() => {
-
-        setSaturedEdges(formatData(result.arcSatureFinal))
-
-        if (result.flotFinal) {
-            setFlow(formatData(result.flotFinal));
-            setNodes(coo);
-        }
-
-    }, [result, coo]);
-
+    const handleNodeMouseDown = (id) => setDraggingNode(id);
     const handleMouseMove = (e) => {
         if (!draggingNode) return;
         const rect = svgRef.current.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-
-        setNodes(prevNodes =>
-            prevNodes.map(n =>
-                n.id === draggingNode ? { ...n, x, y } : n
-            )
-        );
+        setNodes(nodes.map(n => n.id === draggingNode ? { ...n, x, y } : n));
     };
-
     const handleMouseUp = () => setDraggingNode(null);
-    const handleNodeMouseDown = (id) => setDraggingNode(id);
-
-    if (nodes.length === 0) {
-        return <p className="text-center text-gray-500 mt-4">Aucun graphe à afficher.</p>;
-    }
-
-    const edges = flow || [];
 
     const getEdgeCoords = (x1, y1, x2, y2, r = 20) => {
-        const dx = x2 - x1;
-        const dy = y2 - y1;
+        const dx = x2 - x1, dy = y2 - y1;
         const length = Math.sqrt(dx * dx + dy * dy);
         const offsetX = (dx / length) * r;
         const offsetY = (dy / length) * r;
@@ -77,90 +33,95 @@ const FinalFlow = ({ result, coo, theme }) => {
         };
     };
 
+    const formatData = (data) =>
+        Array.isArray(data) ? data.map(edge => ({
+            from: edge[0],
+            to: edge[1],
+            weight: parseInt(edge[2], 10)
+        })) : [];
+
+    useEffect(() => {
+        if (result?.steps?.length && coo?.length) {
+            setNodes(coo);
+            setFlow(formatData(result.final.final_flow));
+            setSaturatedEdges(formatData(result.final.final_satured));
+        }
+    }, [result, coo]);
+
+    useEffect(() => {
+        if (theme === "Dark") {
+            setBg("bg-gray-700");
+            setArrowColor("white");
+        } else {
+            setBg("bg-gray-200");
+            setArrowColor("black");
+        }
+    }, [theme]);
+
+    const isSaturated = (edge) =>
+        saturatedEdges.some(se => se.from === edge.from && se.to === edge.to);
+
+    if (!result?.steps || !coo?.length) return <p className="text-center text-gray-500 mt-4">Chargement du graphe...</p>;
+
     return (
-        <div className="p-4">
-            <div className='w-full relative'>
-                <div className='absolute -bottom-12 left-5 text-accent-content bg-accent w-max px-2 py-1 rounded-full text-sm font-bold drop-shadow-lg drop-shadow-accent'>Flot Maximal</div>
+        <div className='px-20 py-5 flex flex-col gap-5'>
+            <div className='relative'>
+                <span className={`absolute -bottom-18 left-10 text-sm font-medium text-secondary-content bg-secondary px-2 py-1 rounded-full drop-shadow-lg drop-shadow-secondary transition-all`}>
+                    Flot Maximal
+                </span>
             </div>
-            <svg
-                ref={svgRef}
-                width="100%"
-                height="500px"
-                className={`${bg} rounded-md cursor-move border-2`}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-            >
-                <defs>
-                    <marker
-                        id="arrow"
-                        markerWidth="4"
-                        markerHeight="4"
-                        refX="3"
-                        refY="2"
-                        orient="auto"
-                        markerUnits="userSpaceOnUse"
-                    >
-                        <path d="M0,0 L4,2 L0,4 Z" fill={arrowColor} />
-                    </marker>
-                </defs>
+            <div>
+                <svg ref={svgRef} width="100%" height="500px" className={`${bg} rounded-md shadow-sm m-4`} style={{ cursor: 'grab' }} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
+                            <path d="M0,0 L10,5 L0,10 Z" fill="currentColor" />
+                        </marker>
+                    </defs>
 
-                {edges.map((edge, i) => {
-                    const fromNode = nodes.find(n => n.id === edge.from);
-                    const toNode = nodes.find(n => n.id === edge.to);
-                    if (!fromNode || !toNode) return null;
+                    {flow.map((edge, i) => {
+                        const fromNode = nodes.find(n => n.id === edge.from);
+                        const toNode = nodes.find(n => n.id === edge.to);
+                        if (!fromNode || !toNode) return null;
 
-                    const { x1, y1, x2, y2 } = getEdgeCoords(fromNode.x, fromNode.y, toNode.x, toNode.y);
-                    const midX = (fromNode.x + toNode.x) / 2;
-                    const midY = (fromNode.y + toNode.y) / 2;
+                        const { x1, y1, x2, y2 } = getEdgeCoords(fromNode.x, fromNode.y, toNode.x, toNode.y);
+                        const midX = (fromNode.x + toNode.x) / 2;
+                        const midY = (fromNode.y + toNode.y) / 2;
 
-                    let color = arrowColor;
-                    let strokeWidth = 2;
+                        const strokeColor = isSaturated(edge) ? "#f87171" : arrowColor;
 
+                        return (
+                            <g key={i} style={{ opacity: 0, animation: "fadeIn 0.4s ease forwards" }}>
+                                <line
+                                    x1={x1}
+                                    y1={y1}
+                                    x2={x2}
+                                    y2={y2}
+                                    stroke={strokeColor}
+                                    strokeWidth="2"
+                                    markerEnd="url(#arrow)"
+                                />
+                                <text x={midX} y={midY - 5} textAnchor="middle" fill={strokeColor} className="text-sm">
+                                    {edge.weight}
+                                </text>
+                            </g>
+                        );
+                    })}
 
-                    return (
-                        <g key={i}>
-                            <line
-                                x1={x1}
-                                y1={y1}
-                                x2={x2}
-                                y2={y2}
-                                stroke={color}
-                                strokeWidth={strokeWidth}
-                                markerEnd="url(#arrow)"
-                            />
-                            <text
-                                x={midX}
-                                y={midY - 5}
-                                textAnchor="middle"
-                                fill={
-                                    saturedEdges.some(se => se.from === edge.from && se.to === edge.to)
-                                        ? "red"
-                                        : arrowColor
-                                }
-                            >
-                                {edge.weight}
-                            </text>
-
+                    {nodes.map((node) => (
+                        <g key={node.id} transform={`translate(${node.x},${node.y})`} onMouseDown={() => handleNodeMouseDown(node.id)} style={{ opacity: 0, animation: "fadeIn 0.4s ease forwards" }}>
+                            <circle r="20" fill="#2563eb" />
+                            <text x="0" y="5" textAnchor="middle" fill="white" className="text-sm font-semibold">{node.id}</text>
                         </g>
-                    );
-                })}
+                    ))}
+                </svg>
+            </div>
 
-                {nodes.map((node) => {
-
-                    return (
-                        <g
-                            key={node.id}
-                            transform={`translate(${node.x},${node.y})`}
-                            onMouseDown={() => handleNodeMouseDown(node.id)}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <circle r="20" fill={node.special ? "#32cd32" : "#1e90ff"} />
-                            <text x="0" y="5" textAnchor="middle" fill="white">{node.id}</text>
-                        </g>
-                    );
-                })}
-            </svg>
-        </div>
+            <style>{`
+                @keyframes fadeIn {
+                    to { opacity: 1; }
+                }
+            `}</style>
+        </div >
     );
 };
 
