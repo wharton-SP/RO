@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import formatMarkedPath from '../utils/formatting';
 
 const GraphResult = ({ result, coo, theme }) => {
     const [nodes, setNodes] = useState([]);
@@ -7,6 +8,9 @@ const GraphResult = ({ result, coo, theme }) => {
     const [draggingNode, setDraggingNode] = useState(null);
     const [visitedMinEdges, setVisitedMinEdges] = useState([]);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [markingsToDisplay, setMarkingsToDisplay] = useState([]);
+    const [markingIndex, setMarkingIndex] = useState(-1);
+
     const svgRef = useRef(null);
     const [arrowColor, setArrowColor] = useState("black");
     const [bg, setBg] = useState("bg-white");
@@ -15,7 +19,6 @@ const GraphResult = ({ result, coo, theme }) => {
     const currentStep = steps[stepIndex] || {};
 
     const handleNodeMouseDown = (id) => setDraggingNode(id);
-
     const handleMouseMove = (e) => {
         if (!draggingNode) return;
         const rect = svgRef.current.getBoundingClientRect();
@@ -23,7 +26,6 @@ const GraphResult = ({ result, coo, theme }) => {
         const y = e.clientY - rect.top;
         setNodes(nodes.map(n => n.id === draggingNode ? { ...n, x, y } : n));
     };
-
     const handleMouseUp = () => setDraggingNode(null);
 
     const getEdgeCoords = (x1, y1, x2, y2, r = 20) => {
@@ -40,35 +42,39 @@ const GraphResult = ({ result, coo, theme }) => {
     };
 
     const formatData = (data) =>
-        Array.isArray(data) ? data.map(edge => ({
-            from: edge[0],
-            to: edge[1],
-            weight: parseInt(edge[2], 10),
-        })) : [];
+        Array.isArray(data) ? data.map(edge => ({ from: edge[0], to: edge[1], weight: parseInt(edge[2], 10) })) : [];
 
     const goToNextStep = () => {
-        if (stepIndex < steps.length - 1) setStepIndex(prev => prev + 1);
+        if (stepIndex < steps.length - 1) {
+            setStepIndex(prev => prev + 1);
+        } else if (stepIndex === steps.length - 1 && markingIndex < markingsToDisplay.length - 1) {
+            setMarkingIndex(prev => prev + 1);
+        }
     };
 
     const goToPreviousStep = () => {
-        if (stepIndex > 0) setStepIndex(prev => prev - 1);
+        if (markingIndex >= 0) {
+            setMarkingIndex(prev => prev - 1);
+        } else if (stepIndex > 0) {
+            setStepIndex(prev => prev - 1);
+        }
     };
 
     const togglePlay = () => setIsPlaying(!isPlaying);
 
     useEffect(() => {
         if (!isPlaying) return;
-
         const interval = setInterval(() => {
-            setStepIndex(prev => {
-                if (prev < steps.length - 1) return prev + 1;
+            if (stepIndex < steps.length - 1) {
+                setStepIndex(prev => prev + 1);
+            } else if (markingIndex < markingsToDisplay.length - 1) {
+                setMarkingIndex(prev => prev + 1);
+            } else {
                 setIsPlaying(false);
-                return prev;
-            });
+            }
         }, 1000);
-
         return () => clearInterval(interval);
-    }, [isPlaying, steps.length]);
+    }, [isPlaying, stepIndex, markingIndex, steps.length, markingsToDisplay.length]);
 
     useEffect(() => {
         if (result?.steps?.length && coo?.length) {
@@ -77,31 +83,34 @@ const GraphResult = ({ result, coo, theme }) => {
 
             const collectedMinEdges = [];
             for (let i = 0; i <= stepIndex - 1; i++) {
-                const step = result.steps[i];
-                const nextStep = result.steps[i + 1];
-
-                if (
-                    step?.type === "min_edge" &&
-                    nextStep?.type === "path_min" &&
-                    Array.isArray(nextStep.path)
-                ) {
+                const step = steps[i];
+                const next = steps[i + 1];
+                if (step?.type === "min_edge" && next?.type === "path_min" && Array.isArray(next.path)) {
                     const [from, to] = step.edge;
-                    const foundInPath = nextStep.path.some(
-                        ([pathFrom, pathTo]) =>
-                            Array.isArray(pathFrom)
-                                ? pathFrom[0] === from && pathFrom[1] === to
-                                : pathFrom === from && pathTo === to
-                    );
-                    if (foundInPath) {
-                        collectedMinEdges.push([from, to]);
-                    }
+                    const found = next.path.some(([f, t]) => f === from && t === to);
+                    if (found) collectedMinEdges.push([from, to]);
                 }
             }
-
             setVisitedMinEdges(collectedMinEdges);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stepIndex, result, coo]);
+
+    useEffect(() => {
+        if (stepIndex === steps.length - 1 && result?.marked_paths?.[0]?.node_markings) {
+
+            const markings = formatMarkedPath(result.marked_paths[0].path);
+            
+            console.log(formatMarkedPath(result.marked_paths[0].path));
+            
+            setMarkingsToDisplay(markings);
+            setMarkingIndex(-1);
+        } else {
+            setMarkingsToDisplay([]);
+            setMarkingIndex(-1);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [stepIndex, result]);
 
     useEffect(() => {
         if (theme === "Dark") {
@@ -113,31 +122,20 @@ const GraphResult = ({ result, coo, theme }) => {
         }
     }, [theme]);
 
-    if (!result?.steps || !coo?.length) {
-        return <p className="text-center text-gray-500 mt-4">Chargement du graphe...</p>;
-    }
+    if (!result?.steps || !coo?.length) return <p className="text-center text-gray-500 mt-4">Chargement du graphe...</p>;
 
     return (
-        <div>
+        <div className='p-20'>
             <div className='flex items-center gap-4 justify-center mb-2'>
-                <button onClick={goToPreviousStep} className='btn btn-secondary' disabled={stepIndex === 0}>⬅ Prev</button>
+                <button onClick={goToPreviousStep} className='btn btn-secondary'>⬅ Prev</button>
                 <button onClick={togglePlay} className='btn btn-accent'>{isPlaying ? "⏸ Pause" : "▶ Play"}</button>
-                <button onClick={goToNextStep} className='btn btn-secondary' disabled={stepIndex === steps.length - 1}>Next ➡</button>
+                <button onClick={goToNextStep} className='btn btn-secondary'>Next ➡</button>
                 <span className="text-sm font-medium">
-                    Étape {stepIndex + 1} / {steps.length}
-                    {currentStep.type && <span className="ml-2 badge badge-info">{currentStep.type}</span>}
+                    Étape {stepIndex + 1}{markingsToDisplay.length > 0 && markingIndex >= 0 ? ` + Marque ${markingIndex + 1}/${markingsToDisplay.length}` : ``}
                 </span>
             </div>
 
-            <svg
-                ref={svgRef}
-                width="100%"
-                height="500px"
-                className={`${bg} rounded-md shadow-sm m-4`}
-                style={{ cursor: 'grab' }}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-            >
+            <svg ref={svgRef} width="100%" height="500px" className={`${bg} rounded-md shadow-sm m-4`} style={{ cursor: 'grab' }} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
                 <defs>
                     <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
                         <path d="M0,0 L10,5 L0,10 Z" fill={arrowColor} />
@@ -155,52 +153,47 @@ const GraphResult = ({ result, coo, theme }) => {
 
                     let color = arrowColor;
 
-                    if (visitedMinEdges.some(([from, to]) => from === edge.from && to === edge.to)) {
-                        color = "#f87171";
+                    if (visitedMinEdges.some(([f, t]) => f === edge.from && t === edge.to)) {
+                        color = "#f87171"; // rouge pâle
+                    } else if (currentStep.type === "min_edge" && currentStep.edge?.[0] === edge.from && currentStep.edge?.[1] === edge.to) {
+                        color = "#f97316"; // orange
                     }
-                    else if (
-                        currentStep.type === "min_edge" &&
-                        currentStep.edge?.[0] === edge.from &&
-                        currentStep.edge?.[1] === edge.to
-                    ) {
-                        color = "#f97316"; 
-                    }
-                    if (currentStep.type === "path_min" &&
-                        currentStep.path?.some(([from, to]) => from === edge.from && to === edge.to)) {
-                        color = "#4ade80"; 
+                    if (currentStep.type === "path_min" && currentStep.path?.some(([f, t]) => f === edge.from && t === edge.to)) {
+                        color = "#4ade80"; // vert pâle
                     }
 
                     return (
                         <g key={i} style={{ opacity: 0, animation: "fadeIn 0.4s ease forwards" }}>
-                            <line
-                                x1={x1}
-                                y1={y1}
-                                x2={x2}
-                                y2={y2}
-                                stroke={color}
-                                strokeWidth="2"
-                                markerEnd="url(#arrow)"
-                            />
-                            <text x={midX} y={midY - 5} textAnchor="middle" fill={color} className="text-sm">
-                                {edge.weight}
-                            </text>
+                            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth="2" markerEnd="url(#arrow)" />
+                            <text x={midX} y={midY - 5} textAnchor="middle" fill={color} className="text-sm">{edge.weight}</text>
                         </g>
                     );
                 })}
 
                 {nodes.map((node) => (
-                    <g
-                        key={node.id}
-                        transform={`translate(${node.x},${node.y})`}
-                        onMouseDown={() => handleNodeMouseDown(node.id)}
-                        style={{ opacity: 0, animation: "fadeIn 0.4s ease forwards" }}
-                    >
+                    <g key={node.id} transform={`translate(${node.x},${node.y})`} onMouseDown={() => handleNodeMouseDown(node.id)} style={{ opacity: 0, animation: "fadeIn 0.4s ease forwards" }}>
                         <circle r="20" fill="#2563eb" />
-                        <text x="0" y="5" textAnchor="middle" fill="white" className="text-sm font-semibold">
-                            {node.id}
-                        </text>
+                        <text x="0" y="5" textAnchor="middle" fill="white" className="text-sm font-semibold">{node.id}</text>
                     </g>
                 ))}
+
+                {markingsToDisplay.slice(0, markingIndex + 1).map(({ id, sign }) => {
+                    const node = nodes.find(n => n.id === id);
+                    if (!node) return null;
+                    return (
+                        <text
+                            key={`mark-${id}`}
+                            x={node.x}
+                            y={node.y - 30}
+                            textAnchor="middle"
+                            fill={sign === '+' ? '#22c55e' : '#ef4444'}
+                            fontSize="16"
+                            style={{ opacity: 0, animation: "fadeIn 0.3s ease forwards" }}
+                        >
+                            {sign}
+                        </text>
+                    );
+                })}
             </svg>
 
             <style>{`

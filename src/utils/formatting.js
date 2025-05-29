@@ -1,32 +1,25 @@
-const formatMarkedPath = (path) => {
-    if (!path) return 'Pas de chemin Marqué';
+function formatMarkedPath(data) {
+    const nodeMap = new Map();
+    const order = [];
 
-    const mark = [];
+    data.forEach((item) => {
+        const [[source, target], sign] = item;
 
-    path.forEach((p) => {
+        if (!nodeMap.has(source)) {
+            nodeMap.set(source, sign);
+            order.push(source);
+        }
 
-        for (let i = 0; i < p.length; i++) {
-            const [from, to] = p[i][0];
-            const sign = p[i][1];
-
-            if (sign === "-") {
-                mark.push({ e: from, s: sign });
-                mark.push({ e: to, s: "+" });
-            } else {
-                mark.push({ e: from, s: sign });
-                mark.push({ e: to, s: sign });
-            }
+        if (!nodeMap.has(target)) {
+            nodeMap.set(target, sign);
+            order.push(target);
         }
     });
 
-    // Supprimer les doublons
-    const uniqueMark = mark.filter(
-        (item, index, self) =>
-            item.e !== "" &&
-            self.findIndex((m) => m.e === item.e && m.s === item.s) === index
-    );
-
-    return uniqueMark;
-};
+    return order.map(node => ({
+        id: node,
+        sign: nodeMap.get(node)
+    }));
+}
 
 export default formatMarkedPath;
