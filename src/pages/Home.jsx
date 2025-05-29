@@ -6,7 +6,7 @@ import sendData from '../utils/Flow';
 import Waiting from "./../assets/images/waiting.gif"
 
 const Home = ({ theme }) => {
-    const [resultFlow, setResultFlow] = useState({});
+    const [resultFlow, setResultFlow] = useState(null);
     const [coo, setCoo] = useState({});
     const [isFinalGraph, setIsFinalGraph] = useState(false)
     const [showResult, setShowResult] = useState(false);
@@ -17,7 +17,9 @@ const Home = ({ theme }) => {
 
     const handleData = async (data) => {
         console.log("data : " + data);
+
         if (data !== null) {
+            
             try {
                 const flow = await sendData(data);
                 setResultFlow(flow);
@@ -25,31 +27,34 @@ const Home = ({ theme }) => {
                 setShowResult(true);
             } catch (error) {
                 console.error("Erreur lors de l'envoi des données :", error);
+                alert("Une erreur s’est produite lors de l’envoi du graphe. Veuillez réessayer.");
             }
+
         } else {
+
             setShowResult(false);
             console.log("Here");
             console.log(showResult);
-
 
         }
     };
 
     useEffect(() => {
+        console.log(resultFlow);
     }, [resultFlow]);
 
     return (
         <div className="App min-h-screen">
             <Graph sendData={handleData} theme={theme} />
 
-            {showResult ? (
-                <>
-                    <GraphResult result={resultFlow} coo={coo} finalF={setFinalDisplay} theme={theme} />
-                    {isFinalGraph && (
-                        <FinalFlow result={resultFlow} coo={coo} theme={theme} />
-                    )}
-                </>
-            ) : (
+            {/* {showResult ? ( */}
+            <>
+                <GraphResult result={resultFlow} coo={coo} finalF={setFinalDisplay} theme={theme} />
+                {isFinalGraph && (
+                    <FinalFlow result={resultFlow} coo={coo} theme={theme} />
+                )}
+            </>
+            {/* ) : (
                 <div className='absolute right-0 bottom-12 w-max' >
                     <div className="tooltip translate-y-36 w-full">
                         <div className="tooltip-content -translate-x-10">
@@ -59,7 +64,7 @@ const Home = ({ theme }) => {
                     </div>
                     <img src={Waiting} alt="Une personne qui attent" />
                 </div>
-            )}
+            )} */}
 
         </div>
     );
