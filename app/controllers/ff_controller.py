@@ -4,6 +4,8 @@ from app.services.updateGraph import updateGraph, update_flow_graph
 from app.services.mark import find_augmenting_path
 from app.services.verifySaturedBlocked import finalSaturedEdge
 
+from collections import OrderedDict
+
 def fordFulkerson(graphOriginal):
     graph = [(e["source"], e["target"], e["capacity"]) for e in graphOriginal]
     flow_graph = [(u, v, 0) for u, v, c in graph]
@@ -21,12 +23,20 @@ def fordFulkerson(graphOriginal):
             break
 
         min_e = minEdge(available_edges)
+        if min_e is None:
+            continue  # Skip if no edge found
+
         step_list.append({"type": "min_edge", "edge": list(min_e)})
 
         path = pathThroughSpecificEdge(residual_graph, min_e, satured_edges)
         if not path:
             blocked_edges.add(min_e)
-            step_list.append({"type": "graph_update", "graph": list(flow_graph), "satured": list(satured_edges), "blocked": list(blocked_edges)})
+            step_list.append({
+                "type": "graph_update",
+                "graph": list(flow_graph),
+                "satured": list(satured_edges),
+                "blocked": list(blocked_edges)
+            })
             continue
 
         step_list.append({"type": "path_min", "path": list(path)})
@@ -40,7 +50,6 @@ def fordFulkerson(graphOriginal):
                     satured_edges.add((u, v, 0))
 
         max_flow += min_capacity
-
         step_list.append({
             "type": "graph_update",
             "graph": list(flow_graph),
@@ -59,17 +68,39 @@ def fordFulkerson(graphOriginal):
 
         flow_graph = update_flow_graph(marked_path, flow_graph, min_back)
 
+        # Calculate node markings for THIS path only
+        current_node_markings = {}
+        for (u, v), sign, _ in marked_path:
+            if u[0] not in current_node_markings:
+                current_node_markings[u[0]] = sign
+            if v[0] not in current_node_markings:
+                current_node_markings[v[0]] = sign
+                
+        ordered_markings = OrderedDict()
+        if 'α' in current_node_markings:
+            ordered_markings['α'] = current_node_markings['α']
+        for node in sorted(key for key in current_node_markings if key not in {'α', 'ω'}):
+            ordered_markings[node] = current_node_markings[node]
+        if 'ω' in current_node_markings:
+            ordered_markings['ω'] = current_node_markings['ω']
+
+        print("Mark-2 : ", current_node_markings)
+
         marked_path_list.append({
             "type": "marked_path",
             "path": [(u, s, c) for u, s, c in marked_path],
-            "graph": list(flow_graph)
+            "graph": list(flow_graph),
+            "node_markings": dict(current_node_markings) 
         })
+
+        print("mark : ", marked_path)
+        print("node_markings (current path): ", current_node_markings)
 
     final_satured = finalSaturedEdge(graph, flow_graph)
 
     return {
         "steps": step_list,
-        "marked_paths": marked_path_list,
+        "marked_paths": marked_path_list,  # Contains node_markings for each path
         "final": {
             "max_flow": max_flow,
             "final_flow": list(flow_graph),
