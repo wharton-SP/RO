@@ -11,7 +11,7 @@ def fordFulkerson(graphOriginal):
 
     satured_edges = set()
     blocked_edges = set()
-    step_list = []
+    step_list = [{"type": "graph_update", "graph": list(flow_graph)}]
     marked_path_list = []
     max_flow = 0
 
