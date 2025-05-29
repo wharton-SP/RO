@@ -65,6 +65,11 @@ const FinalFlow = ({ result, coo, theme }) => {
 
     return (
         <div className='px-20 py-5 flex flex-col gap-5'>
+            <div className='relative'>
+                <span className={`absolute -bottom-18 left-10 text-sm font-medium text-secondary-content bg-secondary px-2 py-1 rounded-full drop-shadow-lg drop-shadow-secondary transition-all`}>
+                    Flot Maximal
+                </span>
+            </div>
             <div>
                 <svg ref={svgRef} width="100%" height="500px" className={`${bg} rounded-md shadow-sm m-4`} style={{ cursor: 'grab' }} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
                     <defs>
@@ -116,7 +121,7 @@ const FinalFlow = ({ result, coo, theme }) => {
                     to { opacity: 1; }
                 }
             `}</style>
-        </div>
+        </div >
     );
 };
 
