@@ -71,7 +71,7 @@ const FinalFlow = ({ result, coo, theme }) => {
                 </span>
             </div>
             <div>
-                <svg ref={svgRef} width="100%" height="500px" className={`${bg} rounded-md shadow-sm m-4`} style={{ cursor: 'grab' }} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
+                <svg ref={svgRef} width="100%" height="500px" className={`${bg} rounded-md shadow-sm m-4 cursor-default`} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
                     <defs>
                         <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto">
                             <path d="M0,0 L10,5 L0,10 Z" fill="currentColor" />
@@ -108,7 +108,7 @@ const FinalFlow = ({ result, coo, theme }) => {
                     })}
 
                     {nodes.map((node) => (
-                        <g key={node.id} transform={`translate(${node.x},${node.y})`} onMouseDown={() => handleNodeMouseDown(node.id)} style={{ opacity: 0, animation: "fadeIn 0.4s ease forwards" }}>
+                        <g key={node.id} transform={`translate(${node.x},${node.y})`} className='cursor-grab active:cursor-grabbing' onMouseDown={() => handleNodeMouseDown(node.id)} style={{ opacity: 0, animation: "fadeIn 0.4s ease forwards" }}>
                             <circle r="20" fill="#2563eb" />
                             <text x="0" y="5" textAnchor="middle" fill="white" className="text-sm font-semibold">{node.id}</text>
                         </g>
