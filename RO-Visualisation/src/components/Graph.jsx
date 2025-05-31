@@ -277,7 +277,7 @@ const Graph = ({ sendData, theme }) => {
                             e.stopPropagation();
                             renameNode(node.id);
                         }}
-                        className="cursor-pointer"
+                        className=" cursor-grab active:cursor-grabbing"
                     >
                         {selectedNode === node.id && (
                             <circle r="24" fill="none" stroke="yellow" strokeWidth="3" />
