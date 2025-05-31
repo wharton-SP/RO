@@ -1,4 +1,5 @@
 import { Bolt } from 'lucide-react'
+import build from "./../../assets/images/build.gif"
 
 const Build = () => {
     return (
@@ -14,6 +15,9 @@ const Build = () => {
                 <li>Le nœud sélectionné est entouré d’un cercle jaune.</li>
                 <li>Vous pouvez déplacer les nœuds à tout moment, même s’ils ne sont pas sélectionnés.</li>
             </ul>
+            <div className='w-full flex justify-center py-3'>
+                <img src={build} className='w-3/4 rounded-lg'></img>
+            </div>
         </section>
     )
 }
