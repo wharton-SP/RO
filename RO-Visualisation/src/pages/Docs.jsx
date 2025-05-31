@@ -6,6 +6,12 @@ import {
     UploadIcon,
     MousePointerClickIcon,
     InfoIcon,
+    Bolt,
+    Blend,
+    SquareMousePointer,
+    Workflow,
+    ArrowDownUp,
+    CircleHelp,
 } from "lucide-react";
 
 const Docs = () => {
@@ -13,17 +19,18 @@ const Docs = () => {
         <div className="flex flex-col lg:flex-row h-full p-4 gap-6">
             {/* Sidebar gauche */}
             <aside className="lg:w-1/4 w-full bg-base-200 p-4 rounded-xl shadow-md h-fit sticky top-4">
-                <h2 className="text-xl font-semibold flex items-center gap-2 mb-4">
-                    <BookOpenIcon className="w-5 h-5" />
-                    Sommaire
-                </h2>
                 <ul className="menu">
-                    <li><a href="#construction">🧱 Construction du Graphe</a></li>
-                    <li><a href="#source-puits">🔵 Source et Puits</a></li>
-                    <li><a href="#actions">🖱️ Actions sur les Nœuds</a></li>
-                    <li><a href="#calcul">🚀 Calcul du Flot Max</a></li>
-                    <li><a href="#import-export">📂 Import / Export</a></li>
-                    <li><a href="#aide">❓ Aide</a></li>
+                    <li>
+                        <h2 className="menu-title uppercase">Sommaire</h2>
+                        <ul>
+                            <li><a href="#construction"><Bolt /> Construction du Graphe</a></li>
+                            <li><a href="#source-puits"><Blend /> Source et Puits</a></li>
+                            <li><a href="#actions"><SquareMousePointer /> Actions sur les Nœuds</a></li>
+                            <li><a href="#calcul"><Workflow /> Calcul du Flot Max</a></li>
+                            <li><a href="#import-export"><ArrowDownUp /> Import / Export</a></li>
+                            <li><a href="#aide"><CircleHelp /> Aide</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </aside>
 
