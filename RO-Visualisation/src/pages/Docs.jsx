@@ -16,47 +16,52 @@ const Docs = () => {
     }
 
     return (
-        <div className="flex flex-col lg:flex-row h-full p-4 gap-6">
-            {/* Sidebar gauche */}
-            <aside className="lg:w-1/4 w-full bg-base-200 p-4 rounded-xl shadow-md h-fit sticky top-4">
-                <ul className="menu">
-                    <li>
-                        <h2 className="menu-title uppercase">Sommaire</h2>
-                        <ul>
-                            <li><div onClick={() => isSection("Build")}><Bolt /> Construction du Graphe</div></li>
-                            <li><div onClick={() => isSection("Source")}><Blend /> Source et Puits</div></li>
-                            <li><div onClick={() => isSection("Action")}><SquareMousePointer /> Actions sur les Nœuds</div></li>
-                            <li><div onClick={() => isSection("Calcul")}><Workflow /> Calcul du Flot Max</div></li>
-                            <li><div onClick={() => isSection("ImpExp")}><ArrowDownUp /> Import / Export</div></li>
-                            <li><div onClick={() => isSection("Help")}><CircleHelp /> Aide</div></li>
-                        </ul>
-                    </li>
-                </ul>
-            </aside>
+        <div className='absolute h-screen w-screen -z-10 top-0 left-0 overflow-hidden pt-15'>
+            <div className="flex flex-col lg:flex-row h-full p-4 gap-6">
+                {/* Sidebar gauche */}
+                <aside className="lg:w-1/4 w-full bg-base-200 p-4 rounded-xl shadow-md ">
+                    <ul className="menu">
+                        <li>
+                            <h2 className="menu-title uppercase">Sommaire</h2>
+                            <ul>
+                                <li><div onClick={() => isSection("Build")}><Bolt /> Construction du Graphe</div></li>
+                                <li><div onClick={() => isSection("Source")}><Blend /> Source et Puits</div></li>
+                                <li><div onClick={() => isSection("Action")}><SquareMousePointer /> Actions sur les Nœuds</div></li>
+                                <li><div onClick={() => isSection("Calcul")}><Workflow /> Calcul du Flot Max</div></li>
+                                <li><div onClick={() => isSection("ImpExp")}><ArrowDownUp /> Import / Export</div></li>
+                                <li><div onClick={() => isSection("Help")}><CircleHelp /> Aide</div></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </aside>
+                <div className="divider divider-horizontal"></div>
+                {/* Contenu principal */}
+                <main className="lg:w-3/4 w-full flex flex-col gap-4">
+                    <div className="w-full bg-base-200 p-4 rounded-xl shadow-md">
+                        <h1 className="menu-title text-3xl font-bold flex items-center gap-2">
+                            <BookOpenIcon size={30} />
+                            Documentation – Visualisateur Flot Max (RO)
+                        </h1>
 
-            {/* Contenu principal */}
-            <main className="lg:w-3/4 w-full prose prose-lg max-w-none">
-                <h1 className="text-3xl font-bold flex items-center gap-2">
-                    <BookOpenIcon className="w-6 h-6" />
-                    Documentation – Visualisateur Flot Max (RO)
-                </h1>
+                        <p>
+                            Cette application vous permet de <strong>dessiner un graphe</strong>, de <strong>calculer un flot
+                                maximal</strong> et d’<strong>afficher les étapes</strong> de l’algorithme de façon interactive.
+                        </p>
+                    </div>
 
-                <p>
-                    Cette application vous permet de <strong>dessiner un graphe</strong>, de <strong>calculer un flot
-                        maximal</strong> et d’<strong>afficher les étapes</strong> de l’algorithme de façon interactive.
-                </p>
+                    <div className="w-full bg-base-200 p-4 rounded-xl shadow-md h-full">
+                        {(section === "Build") && <Build />}
+                        {(section === "Source") && <SuperNodes />}
+                        {(section === "Action") && <Action />}
+                        {(section === "Calcul") && <Calcul />}
+                        {(section === "ImpExp") && <ImporExport />}
+                        {(section === "Help") && <Help />}
+                    </div>
 
-                <div className="divider"></div>
-
-                {(section === "Build") && <Build />}
-                {(section === "Source") && <SuperNodes />}
-                {(section === "Action") && <Action />}
-                {(section === "Calcul") && <Calcul />}
-                {(section === "ImpExp") && <ImporExport />}
-                {(section === "Help") && <Help />}
-
-            </main>
+                </main>
+            </div>
         </div>
+
     );
 };
 
