@@ -1,11 +1,6 @@
 import React from "react";
 import {
     BookOpenIcon,
-    RocketIcon,
-    GitBranchIcon,
-    UploadIcon,
-    MousePointerClickIcon,
-    InfoIcon,
     Bolt,
     Blend,
     SquareMousePointer,
