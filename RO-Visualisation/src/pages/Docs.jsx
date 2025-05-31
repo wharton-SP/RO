@@ -1,15 +1,20 @@
-import React from "react";
-import {
-    BookOpenIcon,
-    Bolt,
-    Blend,
-    SquareMousePointer,
-    Workflow,
-    ArrowDownUp,
-    CircleHelp,
-} from "lucide-react";
+import React, { useState } from "react";
+import { BookOpenIcon, Bolt, Blend, SquareMousePointer, Workflow, ArrowDownUp, CircleHelp } from "lucide-react";
+import Build from "../components/docs/Build";
+import SuperNodes from "../components/docs/SuperNodes";
+import Action from "../components/docs/Action";
+import Calcul from "../components/docs/Calcul";
+import ImporExport from "../components/docs/ImporExport";
+import Help from "../components/docs/Help";
 
 const Docs = () => {
+
+    const [section, setSection] = useState("Build");
+
+    const isSection = (section) => {
+        setSection(section)
+    }
+
     return (
         <div className="flex flex-col lg:flex-row h-full p-4 gap-6">
             {/* Sidebar gauche */}
@@ -18,12 +23,12 @@ const Docs = () => {
                     <li>
                         <h2 className="menu-title uppercase">Sommaire</h2>
                         <ul>
-                            <li><a href="#construction"><Bolt /> Construction du Graphe</a></li>
-                            <li><a href="#source-puits"><Blend /> Source et Puits</a></li>
-                            <li><a href="#actions"><SquareMousePointer /> Actions sur les Nœuds</a></li>
-                            <li><a href="#calcul"><Workflow /> Calcul du Flot Max</a></li>
-                            <li><a href="#import-export"><ArrowDownUp /> Import / Export</a></li>
-                            <li><a href="#aide"><CircleHelp /> Aide</a></li>
+                            <li><div onClick={() => isSection("Build")}><Bolt /> Construction du Graphe</div></li>
+                            <li><div onClick={() => isSection("Source")}><Blend /> Source et Puits</div></li>
+                            <li><div onClick={() => isSection("Action")}><SquareMousePointer /> Actions sur les Nœuds</div></li>
+                            <li><div onClick={() => isSection("Calcul")}><Workflow /> Calcul du Flot Max</div></li>
+                            <li><div onClick={() => isSection("ImpExp")}><ArrowDownUp /> Import / Export</div></li>
+                            <li><div onClick={() => isSection("Help")}><CircleHelp /> Aide</div></li>
                         </ul>
                     </li>
                 </ul>
@@ -43,85 +48,13 @@ const Docs = () => {
 
                 <div className="divider"></div>
 
-                <section id="construction">
-                    <h2>🧱 1. Construction du Graphe</h2>
-                    <ul>
-                        <li>👉 Cliquez n’importe où dans la zone de dessin pour <strong>ajouter un nœud</strong>.</li>
-                        <li>
-                            👉 Pour <strong>ajouter une arête</strong> :
-                            <kbd className="kbd">Shift</kbd> + clic sur le nœud de départ, puis
-                            <kbd className="kbd">Shift</kbd> + clic sur le nœud d’arrivée.
-                        </li>
-                        <li>Le nœud sélectionné est entouré d’un cercle jaune.</li>
-                        <li>Vous pouvez déplacer les nœuds à tout moment, même s’ils ne sont pas sélectionnés.</li>
-                    </ul>
-                </section>
+                {(section === "Build") && <Build />}
+                {(section === "Source") && <SuperNodes />}
+                {(section === "Action") && <Action />}
+                {(section === "Calcul") && <Calcul />}
+                {(section === "ImpExp") && <ImporExport />}
+                {(section === "Help") && <Help />}
 
-                <div className="divider"></div>
-
-                <section id="source-puits">
-                    <h2>🔵 2. Nœuds spéciaux : Source et Puits</h2>
-                    <ul>
-                        <li>
-                            🡒 Cliquez sur <button className="btn btn-sm btn-primary">α</button> pour définir le
-                            <strong> nœud source</strong>.
-                        </li>
-                        <li>
-                            🡒 Cliquez sur <button className="btn btn-sm btn-secondary">ω</button> pour définir le
-                            <strong> nœud puits</strong>.
-                        </li>
-                        <li>⚠️ Ces deux nœuds sont requis pour lancer le calcul.</li>
-                    </ul>
-                </section>
-
-                <div className="divider"></div>
-
-                <section id="actions">
-                    <h2>🖱️ 3. Actions sur les Nœuds</h2>
-                    <ul>
-                        <li>🖱️ <strong>Renommer un nœud :</strong> clic droit.</li>
-                        <li>❌ <strong>Supprimer un nœud :</strong> double-clic.</li>
-                    </ul>
-                </section>
-
-                <div className="divider"></div>
-
-                <section id="calcul">
-                    <h2>🚀 4. Calcul du Flot Max</h2>
-                    <p>
-                        Une fois le graphe prêt, cliquez sur le bouton
-                        <button className="btn btn-accent btn-sm mx-2">Flot Max</button>
-                        pour lancer l’algorithme.
-                    </p>
-                    <p>
-                        Les étapes du calcul seront affichées de façon progressive : chemins augmentants, mise à jour des flots, etc.
-                    </p>
-                </section>
-
-                <div className="divider"></div>
-
-                <section id="import-export">
-                    <h2>📂 5. Import / Export</h2>
-                    <ul>
-                        <li>
-                            💾 <strong>Exporter :</strong>
-                            <button className="btn btn-outline btn-sm mx-2">Exporter</button> pour sauvegarder le graphe.
-                        </li>
-                        <li>
-                            📁 <strong>Importer :</strong>
-                            <button className="btn btn-outline btn-sm mx-2">Importer</button> pour charger un fichier JSON.
-                        </li>
-                    </ul>
-                </section>
-
-                <div className="divider"></div>
-
-                <section id="aide">
-                    <h2>❓ Aide</h2>
-                    <p>
-                        Besoin d’aide ? Consultez la FAQ dans l’app ou contactez l’équipe projet.
-                    </p>
-                </section>
             </main>
         </div>
     );
