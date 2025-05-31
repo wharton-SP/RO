@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Landing from './pages/Landing';
 import SimpleNav from './components/UI/SimpleNav';
+import Docs from './pages/Docs';
 
 const App = () => {
 
@@ -21,6 +22,7 @@ const App = () => {
       <SimpleNav handleThemeChange={handleThemeChange} />
       <Routes>
         <Route path="/home" element={<Home theme={theme} />} />
+        <Route path="/docs" element={<Docs theme={theme} />} />
         <Route path='/' element={<Landing />} />
       </Routes>
     </Router>
