@@ -5,7 +5,7 @@ import BrowserLayout from '../components/UI/BrowserLayout'
 
 const Landing = ({ theme }) => {
     return (
-        <div className='absolute h-screen w-screen -z-10 top-0 left-0 overflow-hidden'>
+        <div className='absolute h-screen w-screen -z-10 top-0 left-0 overflow-hidden pt-10'>
             <div className='relative flex items-center justify-center gap-10 w-full h-full'>
                 <div className='flex flex-col gap-5'>
                     <div>
