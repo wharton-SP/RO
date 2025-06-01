@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 const SimpleNav = ({ handleThemeChange }) => {
     return (
-        <div className="navbar bg-base-100 shadow-sm flex justify-between">
+        <div className="navbar bg-base-100 shadow-sm flex justify-between px-10">
             <Link to="/" className="text-xl">RO | Flot Max</Link>
             <div className='flex items-center gap-3'>
                 <div className='flex gap-5'>
