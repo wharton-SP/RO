@@ -20,6 +20,10 @@ const Docs = () => {
             <div className="flex flex-col lg:flex-row h-full p-4 gap-6">
                 {/* Sidebar gauche */}
                 <aside className="lg:w-1/4 w-full bg-base-200 p-4 rounded-xl shadow-md ">
+                    <h1 className="menu-title text-3xl font-bold flex items-center gap-2">
+                        <BookOpenIcon size={30} />
+                        Documentation
+                    </h1>
                     <ul className="menu">
                         <li>
                             <h2 className="menu-title uppercase">Sommaire</h2>
@@ -37,13 +41,6 @@ const Docs = () => {
                 <div className="divider divider-horizontal"></div>
                 {/* Contenu principal */}
                 <main className="lg:w-3/4 w-full flex flex-col gap-4">
-                    <div className="w-full bg-base-200 p-4 rounded-xl shadow-md">
-                        <h1 className="menu-title text-3xl font-bold flex items-center gap-2">
-                            <BookOpenIcon size={30} />
-                            Documentation – Visualisateur Flot Max (RO)
-                        </h1>
-                    </div>
-
                     <div className="w-full bg-base-200 p-4 rounded-xl shadow-md h-full">
                         {(section === "Build") && <Build />}
                         {(section === "Source") && <SuperNodes />}
