@@ -1,11 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { FileText } from 'lucide-react'
+import BrowserLayout from '../components/UI/BrowserLayout'
 
 const Landing = () => {
     return (
-        <div className='absolute h-screen w-screen -z-10 top-0 left-0 overflow-hidden flex justify-center items-center'>
-            <div className='relative flex items-center gap-2'>
+        <div className='absolute h-screen w-screen -z-10 top-0 left-0 overflow-hidden'>
+            <div className='relative flex items-center justify-center gap-10 w-full h-full'>
                 <div className='flex flex-col gap-5'>
                     <div>
                         <h1 className='uppercase text-5xl font-bold'>
@@ -24,8 +25,8 @@ const Landing = () => {
                         </Link>
                     </div>
                 </div>
-                <div>
-                    Graph Representation
+                <div className='h-60 w-1/4'>
+                    <BrowserLayout/>
                 </div>
             </div>
         </div>
