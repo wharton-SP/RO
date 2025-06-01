@@ -4,6 +4,7 @@ import GraphResult from '../components/GraphResult';
 import FinalFlow from '../components/finalFlow';
 import sendData from '../utils/Flow';
 import Waiting from "./../assets/images/waiting.gif"
+import AnimatedPage from '../components/animation/AnimatedPage';
 
 const Home = ({ theme }) => {
     const [resultFlow, setResultFlow] = useState(null);
@@ -19,7 +20,7 @@ const Home = ({ theme }) => {
         console.log("data : " + data);
 
         if (data !== null) {
-            
+
             try {
                 const flow = await sendData(data);
                 setResultFlow(flow);
@@ -44,29 +45,31 @@ const Home = ({ theme }) => {
     }, [resultFlow]);
 
     return (
-        <div className="App min-h-screen">
-            <Graph sendData={handleData} theme={theme} />
+        <AnimatedPage>
+            <div className="App min-h-screen">
+                <Graph sendData={handleData} theme={theme} />
 
-            {showResult ? (
-            <>
-                <GraphResult result={resultFlow} coo={coo} finalF={setFinalDisplay} theme={theme} />
-                {isFinalGraph && (
-                    <FinalFlow result={resultFlow} coo={coo} theme={theme} />
-                )}
-            </>
-            ) : (
-                <div className='absolute right-15 bottom-11 w-max' >
-                    <div className="tooltip translate-y-36 w-full">
-                        <div className="tooltip-content -translate-x-10">
-                            <div className="animate-bounce  text-accent text-xs font-black">J'attend le graph !</div>
+                {showResult ? (
+                    <>
+                        <GraphResult result={resultFlow} coo={coo} finalF={setFinalDisplay} theme={theme} />
+                        {isFinalGraph && (
+                            <FinalFlow result={resultFlow} coo={coo} theme={theme} />
+                        )}
+                    </>
+                ) : (
+                    <div className='absolute right-15 bottom-11 w-max' >
+                        <div className="tooltip translate-y-36 w-full">
+                            <div className="tooltip-content -translate-x-10">
+                                <div className="animate-bounce  text-accent text-xs font-black">J'attend le graph !</div>
+                            </div>
+                            <button className="opacity-0 w-full h-20">Hover me</button>
                         </div>
-                        <button className="opacity-0 w-full h-20">Hover me</button>
+                        <img src={Waiting} alt="Une personne qui attent" />
                     </div>
-                    <img src={Waiting} alt="Une personne qui attent" />
-                </div>
-            )}
+                )}
 
-        </div>
+            </div>
+        </AnimatedPage>
     );
 };
 

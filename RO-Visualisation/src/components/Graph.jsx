@@ -1,5 +1,7 @@
 import { BrushCleaning, FileDown, FileUp, Workflow } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
+// eslint-disable-next-line no-unused-vars
+import {motion} from 'framer-motion'
 
 const Graph = ({ sendData, theme }) => {
 
@@ -187,7 +189,7 @@ const Graph = ({ sendData, theme }) => {
     }, [theme])
 
     return (
-        <div className="px-20 py-5 space-y-4 flex flex-col gap-5">
+        <motion.div layoutId='graphBox' className="px-20 py-5 space-y-4 flex flex-col gap-5">
             <div className="relative flex justify-between items-center gap-2">
                 <div className='flex gap-5 items-center'>
                     <button onClick={exportGraph} className="btn btn-neutral">
@@ -287,7 +289,7 @@ const Graph = ({ sendData, theme }) => {
                     </g>
                 ))}
             </svg>
-        </div>
+        </motion.div>
     );
 };
 

@@ -1,30 +1,37 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
+
 import Home from './pages/Home';
 import Landing from './pages/Landing';
 import SimpleNav from './components/UI/SimpleNav';
 import Docs from './pages/Docs';
 
-const App = () => {
+const AnimatedRoutes = ({ theme }) => {
+  const location = useLocation();
 
-  const [theme, setTheme] = useState("Light")
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/home" element={<Home theme={theme} />} />
+        <Route path="/docs" element={<Docs theme={theme} />} />
+        <Route path="/" element={<Landing theme={theme} />} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
+
+const App = () => {
+  const [theme, setTheme] = useState("Light");
 
   const handleThemeChange = (isTheme) => {
-    if (isTheme === "Dark") {
-      setTheme("Dark")
-    } else {
-      setTheme("Light")
-    }
-  }
+    setTheme(isTheme === "Dark" ? "Dark" : "Light");
+  };
 
   return (
     <Router>
       <SimpleNav handleThemeChange={handleThemeChange} />
-      <Routes>
-        <Route path="/home" element={<Home theme={theme} />} />
-        <Route path="/docs" element={<Docs theme={theme} />} />
-        <Route path='/' element={<Landing />} />
-      </Routes>
+      <AnimatedRoutes theme={theme} />
     </Router>
   );
 };
