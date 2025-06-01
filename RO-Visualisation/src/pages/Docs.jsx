@@ -42,11 +42,6 @@ const Docs = () => {
                             <BookOpenIcon size={30} />
                             Documentation – Visualisateur Flot Max (RO)
                         </h1>
-
-                        <p>
-                            Cette application vous permet de <strong>dessiner un graphe</strong>, de <strong>calculer un flot
-                                maximal</strong> et d’<strong>afficher les étapes</strong> de l’algorithme de façon interactive.
-                        </p>
                     </div>
 
                     <div className="w-full bg-base-200 p-4 rounded-xl shadow-md h-full">
