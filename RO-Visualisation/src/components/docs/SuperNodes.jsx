@@ -20,15 +20,6 @@ const SuperNodes = () => {
                     <strong> nœud puits</strong>.
                 </p>
             </div>
-            <ul>
-                <li>
-
-                </li>
-                <li>
-
-                </li>
-                <li ></li>
-            </ul>
             <div className='w-full flex justify-center py-3'>
                 <img src={source} className='w-3/4 rounded-lg'></img>
             </div>
