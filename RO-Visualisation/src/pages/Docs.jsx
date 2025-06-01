@@ -5,7 +5,6 @@ import SuperNodes from "../components/docs/SuperNodes";
 import Action from "../components/docs/Action";
 import Calcul from "../components/docs/Calcul";
 import ImporExport from "../components/docs/ImporExport";
-import Help from "../components/docs/Help";
 
 const Docs = () => {
 
@@ -33,7 +32,6 @@ const Docs = () => {
                                 <li><div onClick={() => isSection("Action")}><SquareMousePointer /> Actions sur les Nœuds</div></li>
                                 <li><div onClick={() => isSection("Calcul")}><Workflow /> Calcul du Flot Max</div></li>
                                 <li><div onClick={() => isSection("ImpExp")}><ArrowDownUp /> Import / Export</div></li>
-                                <li><div onClick={() => isSection("Help")}><CircleHelp /> Aide</div></li>
                             </ul>
                         </li>
                     </ul>
@@ -46,7 +44,6 @@ const Docs = () => {
                         {(section === "Action") && <Action />}
                         {(section === "Calcul") && <Calcul />}
                         {(section === "ImpExp") && <ImporExport />}
-                        {(section === "Help") && <Help />}
                     </div>
 
                 </main>
