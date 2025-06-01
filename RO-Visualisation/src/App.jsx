@@ -23,7 +23,7 @@ const App = () => {
       <Routes>
         <Route path="/home" element={<Home theme={theme} />} />
         <Route path="/docs" element={<Docs theme={theme} />} />
-        <Route path='/' element={<Landing />} />
+        <Route path='/' element={<Landing theme={theme}/>} />
       </Routes>
     </Router>
   );
