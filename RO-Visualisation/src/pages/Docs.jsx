@@ -38,10 +38,9 @@ const Docs = () => {
                         </li>
                     </ul>
                 </aside>
-                <div className="divider divider-horizontal"></div>
                 {/* Contenu principal */}
                 <main className="lg:w-3/4 w-full flex flex-col gap-4">
-                    <div className="w-full bg-base-200 p-4 rounded-xl shadow-md h-full">
+                    <div className="w-full bg-base-200 p-4 rounded-xl shadow-md h-full overflow-y-scroll">
                         {(section === "Build") && <Build />}
                         {(section === "Source") && <SuperNodes />}
                         {(section === "Action") && <Action />}
