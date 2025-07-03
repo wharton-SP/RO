@@ -58,13 +58,7 @@ const Home = ({ theme }) => {
                     </>
                 ) : (
                     <div className='absolute right-15 bottom-11 w-max' >
-                        <div className="tooltip translate-y-36 w-full">
-                            <div className="tooltip-content -translate-x-10">
-                                <div className="animate-bounce  text-accent text-xs font-black">J'attend le graph !</div>
-                            </div>
-                            <button className="opacity-0 w-full h-20">Hover me</button>
-                        </div>
-                        <img src={Waiting} alt="Une personne qui attent" />
+                        
                     </div>
                 )}
 

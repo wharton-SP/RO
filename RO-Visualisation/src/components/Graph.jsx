@@ -1,7 +1,7 @@
-import { BrushCleaning, FileDown, FileUp, Workflow } from 'lucide-react';
+import { BrushCleaning, Eraser, FileDown, FileUp, Workflow } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 // eslint-disable-next-line no-unused-vars
-import {motion} from 'framer-motion'
+import { motion } from 'framer-motion'
 
 const Graph = ({ sendData, theme }) => {
 
@@ -163,8 +163,7 @@ const Graph = ({ sendData, theme }) => {
     };
 
     const clear = () => {
-        setNodes([]);
-        setEdges([]);
+        window.location.reload();
     }
 
     useEffect(() => {
@@ -173,7 +172,7 @@ const Graph = ({ sendData, theme }) => {
             sendData(null);
         }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [nodes])
 
     useEffect(() => {
@@ -193,13 +192,13 @@ const Graph = ({ sendData, theme }) => {
             <div className="relative flex justify-between items-center gap-2">
                 <div className='flex gap-5 items-center'>
                     <button onClick={exportGraph} className="btn btn-neutral">
-                        <FileUp /> <div>Exporter</div>
+                        <FileUp /> <motion.div className=''>Json</motion.div>
                     </button>
                     <button onClick={importGraph} className="btn btn-neutral">
-                        <FileDown /> <div>Importer</div>
+                        <FileDown />
                     </button>
-                    <div className='btn btn-warning' onClick={clear}>
-                        <div><BrushCleaning /></div>
+                    <div className='btn btn-error text-error-content w-10' onClick={clear}>
+                        <div><Eraser /></div>
                     </div>
                 </div>
 
