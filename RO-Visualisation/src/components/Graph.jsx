@@ -11,6 +11,7 @@ const Graph = ({ sendData, theme }) => {
     const svgRef = useRef(null);
     const [selectedNode, setSelectedNode] = useState(null);
     const nextIdRef = useRef(0);
+    // eslint-disable-next-line no-unused-vars
     const [bg, setBg] = useState("bg-white")
     const [arrowColor, setArrowColor] = useState("black");
 
@@ -190,6 +191,12 @@ const Graph = ({ sendData, theme }) => {
     return (
         <motion.div layoutId='graphBox' className="px-20 py-5 space-y-4 flex flex-col gap-5">
             <div className="relative flex justify-between items-center gap-2">
+                <div>
+                    <button onClick={calculateFlow} className="btn btn-accent">
+                        <Workflow /> <div>Flot Max</div>
+                    </button>
+                </div>
+
                 <div className='flex gap-5 items-center'>
                     <button onClick={exportGraph} className="btn btn-neutral">
                         <FileUp /> <motion.div className=''>Json</motion.div>
@@ -197,24 +204,20 @@ const Graph = ({ sendData, theme }) => {
                     <button onClick={importGraph} className="btn btn-neutral">
                         <FileDown />
                     </button>
-                    <div className='btn btn-error text-error-content w-10' onClick={clear}>
-                        <div><Eraser /></div>
-                    </div>
                 </div>
 
-                <div>
-                    <button onClick={calculateFlow} className="btn btn-accent">
-                        <Workflow /> <div>Flot Max</div>
-                    </button>
-                </div>
+                
 
-                <div className='absolute -bottom-17  left-5 flex gap-5'>
+                <div className='absolute -bottom-48 z-10 left-5 flex flex-col gap-5'>
                     <button onClick={() => addSuperNode('α')} className="btn btn-primary">
                         α
                     </button>
                     <button onClick={() => addSuperNode('ω')} className="btn btn-primary">
                         ω
                     </button>
+                    <div className='btn btn-error text-error-content w-10' onClick={clear}>
+                        <div><Eraser /></div>
+                    </div>
                 </div>
             </div>
 
@@ -222,7 +225,7 @@ const Graph = ({ sendData, theme }) => {
                 ref={svgRef}
                 width="100%"
                 height="500px"
-                className={`${bg} rounded-md shadow-sm m-4`}
+                className={`bg-transparent backdrop-contrast-75 rounded-md shadow-sm m-4`}
                 style={{ cursor: 'crosshair' }}
                 onClick={addNode}
                 onMouseMove={handleMouseMove}
@@ -255,7 +258,20 @@ const Graph = ({ sendData, theme }) => {
                                 strokeWidth="2"
                                 markerEnd="url(#arrow)"
                             />
-                            <text x={midX} y={midY - 5} textAnchor="middle" fill={arrowColor} className="text-sm">{edge.weight}</text>
+                            <text
+                                x={midX}
+                                y={midY - 5}
+                                textAnchor="middle"
+                                fill={arrowColor}
+                                onContextMenu={(e) => {
+                                    e.preventDefault();
+                                    const newWeight = prompt("Entrez un nouveau poids pour cette arête :", edge.weight);
+                                    if (newWeight) {
+                                        setEdges(edges.map((e, index) => index === i ? { ...e, weight: newWeight } : e));
+                                    }
+                                }
+                                }
+                                className="text-sm">{edge.weight}</text>
                         </g>
                     );
                 })}
