@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { FileText } from 'lucide-react'
+import { ArrowRight, FileText } from 'lucide-react'
 import BrowserLayout from '../components/UI/BrowserLayout'
 
 const Landing = ({ theme }) => {
@@ -18,14 +18,14 @@ const Landing = ({ theme }) => {
                         Basé sur l'algorythme de Ford Fulkerson.
                     </p>
                     <div className='flex gap-5'>
-                        <Link to="/home" className='btn btn-primary'>Commencer</Link>
-                        <Link to="/docs" className='btn btn-outline btn-primary'>
+                        <Link to="/home" className='btn btn-primary'>Entrer <ArrowRight size={20}/> </Link>
+                        {/* <Link to="/docs" className='btn btn-outline btn-primary'>
                             <FileText size={20} />
                             Docs
-                        </Link>
+                        </Link> */}
                     </div>
                 </div>
-                <div className='h-60 w-1/4'>
+                <div className='h-60 w-1/3'>
                     <BrowserLayout theme={theme} />
                 </div>
             </div>

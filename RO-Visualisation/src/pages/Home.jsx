@@ -3,8 +3,9 @@ import Graph from '../components/Graph';
 import GraphResult from '../components/GraphResult';
 import FinalFlow from '../components/finalFlow';
 import sendData from '../utils/Flow';
-import Waiting from "./../assets/images/waiting.gif"
 import AnimatedPage from '../components/animation/AnimatedPage';
+import GraphEdgesTable from '../components/Table';
+import { Info } from 'lucide-react';
 
 const Home = ({ theme }) => {
     const [resultFlow, setResultFlow] = useState(null);
@@ -55,13 +56,26 @@ const Home = ({ theme }) => {
                         {isFinalGraph && (
                             <FinalFlow result={resultFlow} coo={coo} theme={theme} />
                         )}
+                        <div className='fixed right-15 bottom-11 w-max'>
+                            <button className="btn btn-info" onClick={() => document.getElementById('my_modal_2').showModal()}><Info/> Détails</button>
+                            <dialog id="my_modal_2" className="modal">
+                                <div className='modal-box'>
+                                    <GraphEdgesTable data={resultFlow}/>
+                                </div>
+                                <form method="dialog" className="modal-backdrop">
+                                    <button>close</button>
+                                </form>
+                            </dialog>
+                        </div>
                     </>
                 ) : (
                     <div className='absolute right-15 bottom-11 w-max' >
-                        
+
                     </div>
                 )}
-
+                {/* <div className='absolute top-0 left-0 z-20 flex h-max min-h-screen w-screen bg-primary'>
+                    <GraphEdgesTable />
+                </div> */}
             </div>
         </AnimatedPage>
     );

@@ -1,4 +1,4 @@
-import { BrushCleaning, Eraser, FileDown, FileUp, Workflow } from 'lucide-react';
+import { BrushCleaning, Download, Eraser, FileDown, FileJson, FileUp, Slack, Workflow } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion'
@@ -193,20 +193,20 @@ const Graph = ({ sendData, theme }) => {
             <div className="relative flex justify-between items-center gap-2">
                 <div>
                     <button onClick={calculateFlow} className="btn btn-accent">
-                        <Workflow /> <div>Flot Max</div>
+                        <Slack /> <div>Calculer</div>
                     </button>
                 </div>
 
                 <div className='flex gap-5 items-center'>
                     <button onClick={exportGraph} className="btn btn-neutral">
-                        <FileUp /> <motion.div className=''>Json</motion.div>
+                        <Download /> <motion.div className=''>Sauvegarder</motion.div>
                     </button>
                     <button onClick={importGraph} className="btn btn-neutral">
-                        <FileDown />
+                        <FileJson /> Json
                     </button>
                 </div>
 
-                
+
 
                 <div className='absolute -bottom-48 z-10 left-5 flex flex-col gap-5'>
                     <button onClick={() => addSuperNode('α')} className="btn btn-primary">
@@ -299,8 +299,8 @@ const Graph = ({ sendData, theme }) => {
                         {selectedNode === node.id && (
                             <circle r="24" fill="none" stroke="yellow" strokeWidth="3" />
                         )}
-                        <circle r="20" fill="#2563eb" /> {/* bleu Tailwind 500 */}
-                        <text x="0" y="5" textAnchor="middle" fill="white" className="text-sm font-semibold">{node.id}</text>
+                        <circle r="20" className="fill-current text-primary" />
+                        <text x="0" y="5" textAnchor="middle" fill="white" className=" fill-current text-sm text-primary-content font-semibold">{node.id}</text>
                     </g>
                 ))}
             </svg>

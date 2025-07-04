@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL =  "http://localhost:5000/api/";
+const API_BASE_URL =  "https://flask-deployement-production.up.railway.app/api/";
 
 const sendRequest = async (url, method, data) => {
     try {

@@ -66,7 +66,7 @@ const FinalFlow = ({ result, coo, theme }) => {
     return (
         <div className='px-20 py-5 flex flex-col gap-5'>
             <div className='relative'>
-                <span className={`absolute -bottom-18 left-10 text-sm font-medium text-secondary-content bg-secondary px-2 py-1 rounded-full drop-shadow-lg drop-shadow-secondary transition-all`}>
+                <span className={`absolute -bottom-18 left-10 text-sm font-medium badge badge-primary badge-dash transition-all`}>
                     Flot Maximal
                 </span>
             </div>
@@ -109,8 +109,8 @@ const FinalFlow = ({ result, coo, theme }) => {
 
                     {nodes.map((node) => (
                         <g key={node.id} transform={`translate(${node.x},${node.y})`} className='cursor-grab active:cursor-grabbing' onMouseDown={() => handleNodeMouseDown(node.id)} style={{ opacity: 0, animation: "fadeIn 0.4s ease forwards" }}>
-                            <circle r="20" fill="#2563eb" />
-                            <text x="0" y="5" textAnchor="middle" fill="white" className="text-sm font-semibold">{node.id}</text>
+                            <circle r="20" className="fill-current text-primary" />
+                            <text x="0" y="5" textAnchor="middle" fill="white" className=" fill-current text-sm text-primary-content font-semibold">{node.id}</text>
                         </g>
                     ))}
                 </svg>
