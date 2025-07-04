@@ -2,6 +2,7 @@ import React from 'react'
 import ThemeChanger from './ThemeChanger'
 import { Link } from 'react-router-dom'
 
+// eslint-disable-next-line no-unused-vars
 const SimpleNav = ({ handleThemeChange }) => {
     return (
         <div className="navbar bg-base-100 shadow-sm flex justify-between px-10">
@@ -12,8 +13,6 @@ const SimpleNav = ({ handleThemeChange }) => {
                     <Link to="/home" className='hover:underline hover:text-primary transition-all'>Graph</Link>
                     {/* <Link to="/docs" className='hover:underline hover:text-primary transition-all'>Docs</Link> */}
                 </div>
-                <div className="divider divider-horizontal"></div>
-                <ThemeChanger handleThemeChange={handleThemeChange} />
             </div>
         </div>
     )
