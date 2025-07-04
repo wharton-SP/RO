@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "electron": "NODE_ENV=development electron electron/electron.cjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.7",
