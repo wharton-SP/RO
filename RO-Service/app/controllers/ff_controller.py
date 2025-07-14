@@ -15,7 +15,7 @@ def fordFulkerson(graphOriginal):
     blocked_edges = set()
     step_list = [{"type": "graph_update", "graph": list(flow_graph)}]
     marked_path_list = []
-    residual_graph_evolution = []  # ✅ Ajout : tableau pour suivre l'évolution du graphe résiduel
+    residual_graph_evolution = [] 
     max_flow = 0
 
     while True:
@@ -38,7 +38,7 @@ def fordFulkerson(graphOriginal):
                 "satured": list(satured_edges),
                 "blocked": list(blocked_edges)
             })
-            # ✅ Sauvegarde de l'état du graphe résiduel même quand on bloque une arête
+
             residual_graph_evolution.append(list(residual_graph))
             continue
 
@@ -47,7 +47,6 @@ def fordFulkerson(graphOriginal):
         min_capacity = min_e[2]
         flow_graph, residual_graph = updateGraph(flow_graph, residual_graph, min_capacity, path)
 
-        # ✅ Sauvegarde après mise à jour
         residual_graph_evolution.append(list(residual_graph))
 
         for u, v, c in path:
@@ -74,8 +73,6 @@ def fordFulkerson(graphOriginal):
 
         flow_graph = update_flow_graph(marked_path, flow_graph, min_back)
 
-        # ✅ Pas de graphe résiduel ici car on n’en modifie pas explicitement
-        # Si tu veux, tu peux reconstruire le résiduel à partir du flow_graph ici.
 
         current_node_markings = {}
         for (u, v), sign, _ in marked_path:
