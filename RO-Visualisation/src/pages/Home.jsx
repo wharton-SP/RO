@@ -6,7 +6,7 @@ import sendData from '../utils/Flow';
 import AnimatedPage from '../components/animation/AnimatedPage';
 import { motion, AnimatePresence } from "framer-motion";
 import GraphEdgesTable from '../components/Table';
-import { Info } from 'lucide-react';
+import { CircleX, Info } from 'lucide-react';
 
 const Home = ({ theme }) => {
     const [resultFlow, setResultFlow] = useState(null);
@@ -78,7 +78,7 @@ const Home = ({ theme }) => {
                             <FinalFlow result={resultFlow} coo={coo} theme={theme} />
                         )}
                         <div className="fixed z-20 right-5 bottom-5 flex items-center justify-center">
-                            <button onClick={toggleOverlay} className='btn btn-primary'><Info size={18}/> Tableau</button>
+                            <button onClick={toggleOverlay} className='btn btn-primary'><Info size={18} /> Tableau</button>
 
                             <AnimatePresence>
                                 {isOpen && (
@@ -96,8 +96,8 @@ const Home = ({ theme }) => {
                                             transition={{ duration: 0.3 }}
                                             className=" text-2xl"
                                         >
-                                            <GraphEdgesTable data={resultFlow}/>
-                                            <button onClick={toggleOverlay} className='fixed top-5 right-5 btn btn-primary'>Close</button>
+                                            <GraphEdgesTable data={resultFlow} />
+                                            <button onClick={toggleOverlay} className='fixed top-5 right-5 text-error p-5 hover:rotate-180 hover:scale-105 transition-all'><CircleX /></button>
                                         </motion.div>
                                     </motion.div>
                                 )}

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowBigRightDash, ArrowBigLeftDash, Pause, Play, ChevronLeft, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { ArrowBigRightDash, ArrowBigLeftDash, Pause, Play, ChevronLeft, ChevronsLeft, ChevronsRight, ChevronLast } from 'lucide-react';
 import formatMarkedPath from '../utils/formatting';
 
 const GraphResult = ({ result, coo, finalF, theme }) => {
@@ -11,6 +11,7 @@ const GraphResult = ({ result, coo, finalF, theme }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [markingsToDisplay, setMarkingsToDisplay] = useState([]);
     const [markingIndex, setMarkingIndex] = useState(-1);
+    const [hoveredEdge, setHoveredEdge] = useState(null);
 
     const svgRef = useRef(null);
     const [arrowColor, setArrowColor] = useState("black");
@@ -139,7 +140,7 @@ const GraphResult = ({ result, coo, finalF, theme }) => {
                 <button onClick={togglePlay} className='btn btn-accent'>{isPlaying ? <Pause /> : <Play />}</button>
                 <button onClick={goToPreviousStep} className='btn btn-secondary'><ChevronsLeft /></button>
                 <button onClick={goToNextStep} className='btn btn-secondary'><ChevronsRight /></button>
-                <button onClick={goToLast} className='btn btn-accent'>Last Step</button>
+                <button onClick={goToLast} className='btn btn-accent'><ChevronLast /></button>
                 <span className={`${(stepIndex === steps.length - 1) ? "opacity-100" : "opacity-0"} absolute -bottom-18 left-10 text-sm font-medium badge badge-primary badge-dash transition-all`}>
                     Flot Complet
                 </span>
@@ -171,6 +172,10 @@ const GraphResult = ({ result, coo, finalF, theme }) => {
                         }
                         if (currentStep.type === "path_min" && currentStep.path?.some(([f, t]) => f === edge.from && t === edge.to)) {
                             color = "#4ade80"; // vert pâle
+                        }
+
+                        if (hoveredEdge && hoveredEdge[0] === edge.from && hoveredEdge[1] === edge.to) {
+                            color = "#3b82f6"; // bleu
                         }
 
                         return (
@@ -206,6 +211,22 @@ const GraphResult = ({ result, coo, finalF, theme }) => {
                         );
                     })}
                 </svg>
+            </div>
+
+            <div className='flex gap-4 justify-center'>
+                <p>Les arcs Bloqués : </p>
+                {result &&
+                    result.final.blocked_edges.map((edge, index) => (
+                        <div
+                            key={index}
+                            className='badge badge-outline badge-secondary cursor-pointer'
+                            onMouseEnter={() => setHoveredEdge([edge[0], edge[1]])}
+                            onMouseLeave={() => setHoveredEdge(null)}
+                        >
+                            {edge[0]}{edge[1]}
+                        </div>
+                    ))
+                }
             </div>
 
             <style>{`
