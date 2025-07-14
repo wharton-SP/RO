@@ -14,7 +14,7 @@ const GraphEdgesTable = ({ data }) => {
     const isBlocked = (from, to) => blocked.some(edge => edge[0] === from && edge[1] === to);
 
     return (
-        <div className="">
+        <div className="h-screen w-screen p-10 overflow-scroll">
             <h2 className="text-xl font-bold">Détails</h2>
             <span>Flot : {flow}</span>
             <table className="min-w-full border border-gray-700 rounded-2xl">

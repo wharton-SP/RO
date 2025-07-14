@@ -4,6 +4,7 @@ import GraphResult from '../components/GraphResult';
 import FinalFlow from '../components/finalFlow';
 import sendData from '../utils/Flow';
 import AnimatedPage from '../components/animation/AnimatedPage';
+import { motion, AnimatePresence } from "framer-motion";
 import GraphEdgesTable from '../components/Table';
 import { Info } from 'lucide-react';
 
@@ -13,6 +14,7 @@ const Home = ({ theme }) => {
     const [isFinalGraph, setIsFinalGraph] = useState(false)
     const [showResult, setShowResult] = useState(false);
     const [isErase, setIsErase] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
     const setFinalDisplay = (bool) => {
         setIsFinalGraph(bool)
@@ -60,6 +62,10 @@ const Home = ({ theme }) => {
         }
     }, [isErase]);
 
+    const toggleOverlay = () => {
+        setIsOpen((prev) => !prev);
+    };
+
     return (
         <AnimatedPage>
             <div className="App min-h-screen">
@@ -71,16 +77,31 @@ const Home = ({ theme }) => {
                         {isFinalGraph && (
                             <FinalFlow result={resultFlow} coo={coo} theme={theme} />
                         )}
-                        <div className='fixed right-15 bottom-11 w-max'>
-                            <button className="btn btn-info" onClick={() => document.getElementById('my_modal_2').showModal()}><Info/> Détails</button>
-                            <dialog id="my_modal_2" className="modal">
-                                <div className='modal-box'>
-                                    <GraphEdgesTable data={resultFlow}/>
-                                </div>
-                                <form method="dialog" className="modal-backdrop">
-                                    <button>close</button>
-                                </form>
-                            </dialog>
+                        <div className="fixed z-20 right-5 bottom-5 flex items-center justify-center">
+                            <button onClick={toggleOverlay} className='btn btn-primary'><Info size={18}/> Tableau</button>
+
+                            <AnimatePresence>
+                                {isOpen && (
+                                    <motion.div
+                                        className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        <motion.div
+                                            initial={{ scale: 0.9, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            exit={{ scale: 0.9, opacity: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                            className="text-white text-2xl"
+                                        >
+                                            <GraphEdgesTable data={resultFlow}/>
+                                            <button onClick={toggleOverlay} className='fixed top-5 right-5 btn btn-primary'>Close</button>
+                                        </motion.div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </>
                 ) : (
@@ -90,6 +111,14 @@ const Home = ({ theme }) => {
                 )}
                 {/* <div className='absolute top-0 left-0 z-20 flex h-max min-h-screen w-screen bg-primary'>
                     <GraphEdgesTable />
+                    <dialog id="my_modal_2" className="modal">
+                                <div className='modal-box'>
+                                    <GraphEdgesTable data={resultFlow}/>
+                                </div>
+                                <form method="dialog" className="modal-backdrop">
+                                    <button>close</button>
+                                </form>
+                            </dialog>
                 </div> */}
             </div>
         </AnimatedPage>
