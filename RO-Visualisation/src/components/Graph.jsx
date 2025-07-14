@@ -306,6 +306,7 @@ const Graph = ({ sendData, theme, clear }) => {
                         )}
                         <circle r="20" className="fill-current text-primary" />
                         <text x="0" y="5" textAnchor="middle" fill="white" className=" fill-current text-sm text-primary-content font-semibold">{node.id}</text>
+                        <circle r="20" className="fill-current text-transparent" />
                     </g>
                 ))}
             </svg>
