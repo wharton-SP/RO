@@ -61,6 +61,10 @@ const GraphResult = ({ result, coo, finalF, theme }) => {
         }
     };
 
+    const goToLast = () => {
+        setStepIndex(steps.length - 1);
+    }
+
     const togglePlay = () => setIsPlaying(!isPlaying);
 
     useEffect(() => {
@@ -135,6 +139,7 @@ const GraphResult = ({ result, coo, finalF, theme }) => {
                 <button onClick={togglePlay} className='btn btn-accent'>{isPlaying ? <Pause /> : <Play />}</button>
                 <button onClick={goToPreviousStep} className='btn btn-secondary'><ChevronsLeft /></button>
                 <button onClick={goToNextStep} className='btn btn-secondary'><ChevronsRight /></button>
+                <button onClick={goToLast} className='btn btn-accent'>Last Step</button>
                 <span className={`${(stepIndex === steps.length - 1) ? "opacity-100" : "opacity-0"} absolute -bottom-18 left-10 text-sm font-medium badge badge-primary badge-dash transition-all`}>
                     Flot Complet
                 </span>
