@@ -32,7 +32,7 @@ const App = () => {
   return (
     <Router>
       <SimpleNav handleThemeChange={handleThemeChange} />
-      <div className='fixed -bottom-20 left-5'>
+      <div className='fixed -bottom-20 z-40 left-5'>
         <div className='bg-neutral text-white h-40 p-1 rounded-full'>
           <ThemeChanger handleThemeChange={handleThemeChange} />
         </div>

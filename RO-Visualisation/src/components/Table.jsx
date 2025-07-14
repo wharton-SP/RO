@@ -66,8 +66,8 @@ const GraphEdgesTable = ({ data }) => {
     }, [data]);
 
     return (
-        <div className="h-screen w-screen bg-gradient-to-br from-gray-900 to-black text-white p-4 overflow-y-scroll">
-            <div className="">
+        <div className="h-screen w-screen p-4 overflow-y-scroll">
+            <div className="w-full flex justify-center">
                 <table className="border-collapse">
                     <tbody>
                         {sortedArcs.map((arcKey, rowIndex) => {
@@ -78,7 +78,7 @@ const GraphEdgesTable = ({ data }) => {
                             return (
                                 <tr
                                     key={arcKey}
-                                    className={`hover:bg-gray-700/50 transition-colors ${rowIndex % 2 === 0 ? 'bg-gray-800/30' : 'bg-gray-900/30'}`}
+                                    className={`hover:bg-base-100 transition-colors ${rowIndex % 2 === 0 ? 'bg-base-200' : 'bg-base-300'}`}
                                 >
                                     <td className="border-r border-b border-gray-700 p-3 font-mono">
                                         {from}{to}

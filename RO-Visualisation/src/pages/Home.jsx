@@ -83,7 +83,7 @@ const Home = ({ theme }) => {
                             <AnimatePresence>
                                 {isOpen && (
                                     <motion.div
-                                        className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+                                        className="fixed inset-0 bg-base-200 flex items-center justify-center z-20"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
@@ -94,7 +94,7 @@ const Home = ({ theme }) => {
                                             animate={{ scale: 1, opacity: 1 }}
                                             exit={{ scale: 0.9, opacity: 0 }}
                                             transition={{ duration: 0.3 }}
-                                            className="text-white text-2xl"
+                                            className=" text-2xl"
                                         >
                                             <GraphEdgesTable data={resultFlow}/>
                                             <button onClick={toggleOverlay} className='fixed top-5 right-5 btn btn-primary'>Close</button>
@@ -109,17 +109,6 @@ const Home = ({ theme }) => {
 
                     </div>
                 )}
-                {/* <div className='absolute top-0 left-0 z-20 flex h-max min-h-screen w-screen bg-primary'>
-                    <GraphEdgesTable />
-                    <dialog id="my_modal_2" className="modal">
-                                <div className='modal-box'>
-                                    <GraphEdgesTable data={resultFlow}/>
-                                </div>
-                                <form method="dialog" className="modal-backdrop">
-                                    <button>close</button>
-                                </form>
-                            </dialog>
-                </div> */}
             </div>
         </AnimatedPage>
     );
