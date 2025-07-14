@@ -5,44 +5,34 @@ const GraphEdgesTable = ({ data }) => {
         return <div className="p-4 text-red-500">Aucune donnée fournie.</div>;
     }
 
-    const final_flow = data.final.final_flow;
-    const satured = data.final.final_satured;
-    const blocked = data.final.blocked_edges;
-    const flow = data.final.max_flow;
-
-    const isSatured = (from, to) => satured.some(edge => edge[0] === from && edge[1] === to);
-    const isBlocked = (from, to) => blocked.some(edge => edge[0] === from && edge[1] === to);
+    const residualGraphEvolution = data.residual_graph_evolution;
 
     return (
         <div className="h-screen w-screen p-10 overflow-scroll">
-            <h2 className="text-xl font-bold">Détails</h2>
-            <span>Flot : {flow}</span>
-            <table className="min-w-full border border-gray-700 rounded-2xl">
-                <thead>
-                    <tr className="bg-gray-800 text-white">
-                        <th className="border border-gray-600 p-2">Arc</th>
-                        <th className="border border-gray-600 p-2">Flot</th>
-                        <th className="border border-gray-600 p-2">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {final_flow.map(([from, to, flow], idx) => {
-                        const status = isSatured(from, to) ? 'S' : isBlocked(from, to) ? 'B' : '';
-                        return (
-                            <tr key={idx} className="border border-gray-700 hover:backdrop-contrast-75 transition-all">
-                                <td className="border border-gray-600 p-2 text-center">{from}{to}</td>
-                                <td className="border border-gray-600 p-2 text-center">{flow}</td>
-                                <td
-                                    className={`border border-gray-600 p-2 text-center ${status === 'S' ? 'text-red-400' : status === 'B' ? 'text-blue-700' : ''
-                                        }`}
-                                >
-                                    {status}
-                                </td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
+            <h2 className="text-xl font-bold mb-4">Évolution complète du graphe résiduel</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {residualGraphEvolution.map((step, stepIndex) => (
+                    <div key={stepIndex} className="border border-gray-700 rounded-xl p-4 backdrop-blur-sm">
+                        <h3 className="font-semibold mb-2">Étape {stepIndex + 1}</h3>
+                        <table className="min-w-full border border-gray-700 rounded-xl text-sm">
+                            <thead>
+                                <tr className="bg-gray-800 text-white">
+                                    <th className="border border-gray-600 p-1">Arc</th>
+                                    <th className="border border-gray-600 p-1">Capacité résiduelle</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {step.map(([from, to, capacity], idx) => (
+                                    <tr key={idx} className="border border-gray-700 hover:bg-gray-800 transition">
+                                        <td className="border border-gray-600 p-1 text-center">{from} → {to}</td>
+                                        <td className="border border-gray-600 p-1 text-center">{capacity}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };
