@@ -207,7 +207,7 @@ const Graph = ({ sendData, theme, clear }) => {
                         <Download /> <motion.div className=''>Sauvegarder</motion.div>
                     </button>
                     <button onClick={importGraph} className="btn btn-neutral">
-                        <FileJson /> Json
+                        <FileJson /> Charger
                     </button>
                 </div>
 
