@@ -15,6 +15,7 @@ def fordFulkerson(graphOriginal):
     blocked_edges = set()
     step_list = [{"type": "graph_update", "graph": list(flow_graph)}]
     marked_path_list = []
+    residual_graph_evolution = []  # ✅ Ajout : tableau pour suivre l'évolution du graphe résiduel
     max_flow = 0
 
     while True:
@@ -24,7 +25,7 @@ def fordFulkerson(graphOriginal):
 
         min_e = minEdge(available_edges)
         if min_e is None:
-            continue  # Skip if no edge found
+            continue
 
         step_list.append({"type": "min_edge", "edge": list(min_e)})
 
@@ -37,12 +38,17 @@ def fordFulkerson(graphOriginal):
                 "satured": list(satured_edges),
                 "blocked": list(blocked_edges)
             })
+            # ✅ Sauvegarde de l'état du graphe résiduel même quand on bloque une arête
+            residual_graph_evolution.append(list(residual_graph))
             continue
 
         step_list.append({"type": "path_min", "path": list(path)})
 
         min_capacity = min_e[2]
         flow_graph, residual_graph = updateGraph(flow_graph, residual_graph, min_capacity, path)
+
+        # ✅ Sauvegarde après mise à jour
+        residual_graph_evolution.append(list(residual_graph))
 
         for u, v, c in path:
             for ru, rv, rc in residual_graph:
@@ -68,16 +74,15 @@ def fordFulkerson(graphOriginal):
 
         flow_graph = update_flow_graph(marked_path, flow_graph, min_back)
 
-        # Calculate node markings for THIS path only
+        # ✅ Pas de graphe résiduel ici car on n’en modifie pas explicitement
+        # Si tu veux, tu peux reconstruire le résiduel à partir du flow_graph ici.
+
         current_node_markings = {}
         for (u, v), sign, _ in marked_path:
             if u[0] not in current_node_markings:
                 current_node_markings[u[0]] = sign
             if v[0] not in current_node_markings:
                 current_node_markings[v[0]] = sign
-                
-
-        print("Mark-2 : ", current_node_markings)
 
         marked_path_list.append({
             "type": "marked_path",
@@ -86,14 +91,12 @@ def fordFulkerson(graphOriginal):
             "node_markings": current_node_markings
         })
 
-        print("mark : ", marked_path)
-        print("node_markings (current path): ", current_node_markings)
-
     final_satured = finalSaturedEdge(graph, flow_graph)
 
     return {
         "steps": step_list,
-        "marked_paths": marked_path_list,  # Contains node_markings for each path
+        "marked_paths": marked_path_list,
+        "residual_graph_evolution": residual_graph_evolution, 
         "final": {
             "max_flow": max_flow,
             "final_flow": list(flow_graph),
