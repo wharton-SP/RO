@@ -3,18 +3,30 @@ import Graph from '../components/Graph';
 import GraphResult from '../components/GraphResult';
 import FinalFlow from '../components/finalFlow';
 import sendData from '../utils/Flow';
-import Waiting from "./../assets/images/waiting.gif"
 import AnimatedPage from '../components/animation/AnimatedPage';
+import { motion, AnimatePresence } from "framer-motion";
+import GraphEdgesTable from '../components/Table';
+import { Info } from 'lucide-react';
 
 const Home = ({ theme }) => {
     const [resultFlow, setResultFlow] = useState(null);
     const [coo, setCoo] = useState({});
     const [isFinalGraph, setIsFinalGraph] = useState(false)
     const [showResult, setShowResult] = useState(false);
+    const [isErase, setIsErase] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
     const setFinalDisplay = (bool) => {
         setIsFinalGraph(bool)
     }
+
+    const clear = () => {
+        setResultFlow(null);
+        setCoo({});
+        setIsFinalGraph(false);
+        setShowResult(false);
+        setIsErase(false);
+    };
 
     const handleData = async (data) => {
         console.log("data : " + data);
@@ -44,10 +56,20 @@ const Home = ({ theme }) => {
         console.log(resultFlow);
     }, [resultFlow]);
 
+    useEffect(() => {
+        if (isErase) {
+            clear();
+        }
+    }, [isErase]);
+
+    const toggleOverlay = () => {
+        setIsOpen((prev) => !prev);
+    };
+
     return (
         <AnimatedPage>
             <div className="App min-h-screen">
-                <Graph sendData={handleData} theme={theme} />
+                <Graph sendData={handleData} theme={theme} clear={setIsErase} />
 
                 {showResult ? (
                     <>
@@ -55,19 +77,38 @@ const Home = ({ theme }) => {
                         {isFinalGraph && (
                             <FinalFlow result={resultFlow} coo={coo} theme={theme} />
                         )}
+                        <div className="fixed z-20 right-5 bottom-5 flex items-center justify-center">
+                            <button onClick={toggleOverlay} className='btn btn-primary'><Info size={18}/> Tableau</button>
+
+                            <AnimatePresence>
+                                {isOpen && (
+                                    <motion.div
+                                        className="fixed inset-0 bg-base-200 flex items-center justify-center z-20"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        <motion.div
+                                            initial={{ scale: 0.9, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            exit={{ scale: 0.9, opacity: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                            className=" text-2xl"
+                                        >
+                                            <GraphEdgesTable data={resultFlow}/>
+                                            <button onClick={toggleOverlay} className='fixed top-5 right-5 btn btn-primary'>Close</button>
+                                        </motion.div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </>
                 ) : (
                     <div className='absolute right-15 bottom-11 w-max' >
-                        <div className="tooltip translate-y-36 w-full">
-                            <div className="tooltip-content -translate-x-10">
-                                <div className="animate-bounce  text-accent text-xs font-black">J'attend le graph !</div>
-                            </div>
-                            <button className="opacity-0 w-full h-20">Hover me</button>
-                        </div>
-                        <img src={Waiting} alt="Une personne qui attent" />
+
                     </div>
                 )}
-
             </div>
         </AnimatedPage>
     );

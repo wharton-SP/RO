@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowBigRightDash, ArrowBigLeftDash, Pause, Play } from 'lucide-react';
+import { ArrowBigRightDash, ArrowBigLeftDash, Pause, Play, ChevronLeft, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import formatMarkedPath from '../utils/formatting';
 
 const GraphResult = ({ result, coo, finalF, theme }) => {
@@ -60,6 +60,10 @@ const GraphResult = ({ result, coo, finalF, theme }) => {
             setStepIndex(prev => prev - 1);
         }
     };
+
+    const goToLast = () => {
+        setStepIndex(steps.length - 1);
+    }
 
     const togglePlay = () => setIsPlaying(!isPlaying);
 
@@ -131,11 +135,12 @@ const GraphResult = ({ result, coo, finalF, theme }) => {
 
     return (
         <div className='px-20 py-5 flex flex-col gap-5'>
-            <div className='relative flex items-center gap-4 justify-center'>
-                <button onClick={goToPreviousStep} className='btn btn-secondary'><ArrowBigLeftDash /></button>
+            <div className='relative flex items-center gap-4 '>
                 <button onClick={togglePlay} className='btn btn-accent'>{isPlaying ? <Pause /> : <Play />}</button>
-                <button onClick={goToNextStep} className='btn btn-secondary'><ArrowBigRightDash /></button>
-                <span className={`${(stepIndex === steps.length - 1) ? "opacity-100" : "opacity-0"} absolute -bottom-18 left-10 text-sm font-medium text-accent-content bg-accent px-2 py-1 rounded-full drop-shadow-lg drop-shadow-accent transition-all`}>
+                <button onClick={goToPreviousStep} className='btn btn-secondary'><ChevronsLeft /></button>
+                <button onClick={goToNextStep} className='btn btn-secondary'><ChevronsRight /></button>
+                <button onClick={goToLast} className='btn btn-accent'>Last Step</button>
+                <span className={`${(stepIndex === steps.length - 1) ? "opacity-100" : "opacity-0"} absolute -bottom-18 left-10 text-sm font-medium badge badge-primary badge-dash transition-all`}>
                     Flot Complet
                 </span>
             </div>
@@ -178,8 +183,8 @@ const GraphResult = ({ result, coo, finalF, theme }) => {
 
                     {nodes.map((node) => (
                         <g key={node.id} transform={`translate(${node.x},${node.y})`} className='cursor-grab active:cursor-grabbing' onMouseDown={() => handleNodeMouseDown(node.id)} style={{ opacity: 0, animation: "fadeIn 0.4s ease forwards" }}>
-                            <circle r="20" fill="#2563eb" />
-                            <text x="0" y="5" textAnchor="middle" fill="white" className="text-sm font-semibold">{node.id}</text>
+                            <circle r="20" className="fill-current text-primary" />
+                            <text x="0" y="5" textAnchor="middle" fill="white" className=" fill-current text-sm text-primary-content font-semibold">{node.id}</text>
                         </g>
                     ))}
 

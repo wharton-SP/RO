@@ -17,39 +17,41 @@ const Docs = () => {
 
     return (
 
-        <div className='absolute h-screen w-screen -z-10 top-0 left-0 overflow-hidden pt-15'>
+        <div className='absolute w-screen h-screen -z-10 top-0 left-0  pt-15 overflow-hidden rounded-xl' >
             <AnimatedPage>
-                <div className="flex flex-col lg:flex-row h-full p-4 gap-6">
-                    {/* Sidebar gauche */}
-                    <aside className="lg:w-1/4 w-full bg-base-200 p-4 rounded-xl shadow-md ">
-                        <h1 className="menu-title text-3xl font-bold flex items-center gap-2">
-                            <BookOpenIcon size={30} />
-                            Documentation
-                        </h1>
-                        <ul className="menu">
-                            <li>
-                                <h2 className="menu-title uppercase">Sommaire</h2>
-                                <ul>
-                                    <li><div onClick={() => isSection("Build")}><Bolt /> Construction du Graphe</div></li>
-                                    <li><div onClick={() => isSection("Source")}><Blend /> Source et Puits</div></li>
-                                    <li><div onClick={() => isSection("Action")}><SquareMousePointer /> Actions sur les Nœuds</div></li>
-                                    <li><div onClick={() => isSection("Calcul")}><Workflow /> Calcul du Flot Max</div></li>
-                                    <li><div onClick={() => isSection("ImpExp")}><ArrowDownUp /> Import / Export</div></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </aside>
-                    {/* Contenu principal */}
-                    <main className="lg:w-3/4 w-full flex flex-col gap-4">
-                        <div className="w-full bg-base-200 p-4 rounded-xl shadow-md h-full overflow-y-scroll">
-                            {(section === "Build") && <Build />}
-                            {(section === "Source") && <SuperNodes />}
-                            {(section === "Action") && <Action />}
-                            {(section === "Calcul") && <Calcul />}
-                            {(section === "ImpExp") && <ImporExport />}
-                        </div>
+                <div className="w-screen" style={{height: "calc(100vh - 1rem)"}}>
+                    <div className="flex flex-col lg:flex-row  p-4 gap-6" style={{height: "92%"}}>
+                        {/* Sidebar gauche */}
+                        <aside className="lg:w-1/4 w-full bg-base-200 p-4 rounded-xl shadow-md ">
+                            <h1 className="menu-title text-3xl font-bold flex items-center gap-2">
+                                <BookOpenIcon size={30} />
+                                Documentation
+                            </h1>
+                            <ul className="menu">
+                                <li>
+                                    <h2 className="menu-title uppercase">Sommaire</h2>
+                                    <ul>
+                                        <li><div onClick={() => isSection("Build")}><Bolt /> Construction du Graphe</div></li>
+                                        <li><div onClick={() => isSection("Source")}><Blend /> Source et Puits</div></li>
+                                        <li><div onClick={() => isSection("Action")}><SquareMousePointer /> Actions sur les Nœuds</div></li>
+                                        <li><div onClick={() => isSection("Calcul")}><Workflow /> Calcul du Flot Max</div></li>
+                                        <li><div onClick={() => isSection("ImpExp")}><ArrowDownUp /> Import / Export</div></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </aside>
+                        {/* Contenu principal */}
+                        <main className="lg:w-3/4 w-full flex flex-col gap-4">
+                            <div className="w-full bg-base-200 p-4 rounded-xl shadow-md h-full overflow-y-scroll">
+                                {(section === "Build") && <Build />}
+                                {(section === "Source") && <SuperNodes />}
+                                {(section === "Action") && <Action />}
+                                {(section === "Calcul") && <Calcul />}
+                                {(section === "ImpExp") && <ImporExport />}
+                            </div>
 
-                    </main>
+                        </main>
+                    </div>
                 </div>
             </AnimatedPage>
         </div>

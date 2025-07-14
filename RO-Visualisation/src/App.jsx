@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Landing from './pages/Landing';
 import SimpleNav from './components/UI/SimpleNav';
 import Docs from './pages/Docs';
+import ThemeChanger from './components/UI/ThemeChanger';
 
 const AnimatedRoutes = ({ theme }) => {
   const location = useLocation();
@@ -31,6 +32,11 @@ const App = () => {
   return (
     <Router>
       <SimpleNav handleThemeChange={handleThemeChange} />
+      <div className='fixed -bottom-20 z-40 left-5'>
+        <div className='bg-neutral text-white h-40 p-1 rounded-full'>
+          <ThemeChanger handleThemeChange={handleThemeChange} />
+        </div>
+      </div>
       <AnimatedRoutes theme={theme} />
     </Router>
   );
