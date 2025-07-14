@@ -12,10 +12,19 @@ const Home = ({ theme }) => {
     const [coo, setCoo] = useState({});
     const [isFinalGraph, setIsFinalGraph] = useState(false)
     const [showResult, setShowResult] = useState(false);
+    const [isErase, setIsErase] = useState(false);
 
     const setFinalDisplay = (bool) => {
         setIsFinalGraph(bool)
     }
+
+    const clear = () => {
+        setResultFlow(null);
+        setCoo({});
+        setIsFinalGraph(false);
+        setShowResult(false);
+        setIsErase(false);
+    };
 
     const handleData = async (data) => {
         console.log("data : " + data);
@@ -45,10 +54,16 @@ const Home = ({ theme }) => {
         console.log(resultFlow);
     }, [resultFlow]);
 
+    useEffect(() => {
+        if (isErase) {
+            clear();
+        }
+    }, [isErase]);
+
     return (
         <AnimatedPage>
             <div className="App min-h-screen">
-                <Graph sendData={handleData} theme={theme} />
+                <Graph sendData={handleData} theme={theme} clear={setIsErase} />
 
                 {showResult ? (
                     <>

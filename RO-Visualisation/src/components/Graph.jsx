@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion'
 
-const Graph = ({ sendData, theme }) => {
+const Graph = ({ sendData, theme, clear }) => {
 
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
@@ -163,8 +163,13 @@ const Graph = ({ sendData, theme }) => {
         };
     };
 
-    const clear = () => {
-        window.location.reload();
+    const clearGraph = () => {
+        clear(true);
+        setNodes([]);
+        setEdges([]);
+        nextIdRef.current = 0;
+        setSelectedNode(null);
+        setDraggingNode(null);
     }
 
     useEffect(() => {
@@ -215,7 +220,7 @@ const Graph = ({ sendData, theme }) => {
                     <button onClick={() => addSuperNode('ω')} className="btn btn-primary">
                         ω
                     </button>
-                    <div className='btn btn-error text-error-content w-10' onClick={clear}>
+                    <div className='btn btn-error text-error-content w-10' onClick={clearGraph}>
                         <div><Eraser /></div>
                     </div>
                 </div>
