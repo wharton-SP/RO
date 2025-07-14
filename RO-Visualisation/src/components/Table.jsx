@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 const GraphEdgesTable = ({ data }) => {
     if (!data) {
@@ -11,30 +11,25 @@ const GraphEdgesTable = ({ data }) => {
         return <div className="p-4 text-yellow-500">Aucune évolution du graphe résiduel disponible.</div>;
     }
 
-    // Collecter tous les arcs uniques avec leur représentation complète
     const allArcs = new Set();
-    const arcsInfo = new Map(); // Pour stocker les informations originales
+    const arcsInfo = new Map();
 
     residualGraphEvolution.forEach(step => {
         step.forEach(([from, to, capacity]) => {
             const arcKey = `${from}${to}`;
             allArcs.add(arcKey);
-            
-            // Stocker les informations de l'arc si elles n'existent pas déjà
+
             if (!arcsInfo.has(arcKey)) {
                 arcsInfo.set(arcKey, { from, to });
             }
         });
     });
 
-    // Convertir en tableau
     const uniqueArcs = Array.from(allArcs);
 
-    // Trier les arcs selon l'ordre spécifique
     const sortedArcs = useMemo(() => {
         const arcsArray = [...uniqueArcs];
 
-        // Séparer les arcs en trois catégories
         const alphaArcs = [];
         const omegaArcs = [];
         const otherArcs = [];
@@ -51,16 +46,13 @@ const GraphEdgesTable = ({ data }) => {
             }
         });
 
-        // Trier chaque catégorie par ordre alphabétique
         alphaArcs.sort();
         otherArcs.sort();
         omegaArcs.sort();
 
-        // Combiner dans l'ordre: alpha -> autres -> omega
         return [...alphaArcs, ...otherArcs, ...omegaArcs];
     }, [uniqueArcs]);
 
-    // Trouver la capacité d'un arc à une étape donnée
     const findCapacity = (stepIndex, arcKey) => {
         const step = residualGraphEvolution[stepIndex];
         const foundEdge = step.find(
@@ -69,6 +61,10 @@ const GraphEdgesTable = ({ data }) => {
         return foundEdge ? foundEdge[2] : '-';
     };
 
+    useEffect(() => {
+        console.log("Arc bloqué :", data.final.blocked_edges);
+    }, [data]);
+
     return (
         <div className="h-screen w-screen bg-gradient-to-br from-gray-900 to-black text-white p-4 overflow-y-scroll">
             <div className="">
@@ -76,6 +72,9 @@ const GraphEdgesTable = ({ data }) => {
                     <tbody>
                         {sortedArcs.map((arcKey, rowIndex) => {
                             const { from, to } = arcsInfo.get(arcKey);
+                            let firstZeroFound = false;
+                            let fisrtBlockFound = false;
+
                             return (
                                 <tr
                                     key={arcKey}
@@ -86,17 +85,35 @@ const GraphEdgesTable = ({ data }) => {
                                     </td>
                                     {residualGraphEvolution.map((_, stepIndex) => {
                                         const capacity = findCapacity(stepIndex, arcKey);
+                                        let displayValue = capacity;
+                                        let textColorClass = 'text-gray-500';
+
+                                        if (typeof capacity === 'number') {
+                                            if (capacity > 0) {
+                                                textColorClass = 'text-green-400';
+
+                                                if (capacity === 1) {
+                                                    displayValue = '1';
+                                                }
+
+                                            } else if (capacity === 0) {
+                                                if (!firstZeroFound) {
+                                                    textColorClass = 'text-yellow-400';
+                                                    firstZeroFound = true;
+                                                }
+                                                else {
+                                                    displayValue = 'S';
+                                                    textColorClass = 'text-red-400';
+                                                }
+                                            }
+                                        }
+
                                         return (
                                             <td
                                                 key={`${arcKey}-${stepIndex}`}
-                                                className={`border-b border-gray-700 p-3 text-center ${capacity > 0
-                                                        ? 'text-green-400'
-                                                        : capacity === 0
-                                                            ? 'text-yellow-400'
-                                                            : 'text-gray-500'
-                                                    }`}
+                                                className={`border-b border-gray-700 p-3 text-center ${textColorClass}`}
                                             >
-                                                {capacity}
+                                                {displayValue}
                                             </td>
                                         );
                                     })}
