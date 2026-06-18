@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://ro-back.whartonaldrick.com/api/";
+const API_BASE_URL = "https://ro-back.wharton-aldrick.com/api/";
 
 const sendRequest = async (url, method, data) => {
     try {
