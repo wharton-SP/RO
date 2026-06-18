@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+.env
+*.log
+*.pid
+*.seed
+*.pid.lock
+.vite/
+.git/
+.DS_Store

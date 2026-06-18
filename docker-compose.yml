@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./RO-Service
+      dockerfile: Dockerfile
+    container_name: ro-backend
+    ports:
+      - "4321:4321"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=run.py
+      - PYTHONUNBUFFERED=1
+    networks:
+      - ro-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./RO-Visualisation
+      dockerfile: Dockerfile
+    container_name: ro-frontend
+    ports:
+      - "8010:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_BASE_URL=http://backend:4321/api/
+    networks:
+      - ro-network
+    restart: unless-stopped
+
+networks:
+  ro-network:
+    driver: bridge
