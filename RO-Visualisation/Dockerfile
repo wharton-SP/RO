@@ -2,7 +2,6 @@
 FROM node:24 AS build
 
 RUN apt update && apt install -y git
-RUN npm install -g yarn
 
 WORKDIR /app
 

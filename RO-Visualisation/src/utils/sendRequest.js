@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://flask-deployement-r1id.onrender.com/api/";
+const API_BASE_URL = "http://backend:4321/api/";
 
 const sendRequest = async (url, method, data) => {
     try {
