@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ro-service-deployment
+  labels:
+    app: ro-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ro-service
+  template:
+    metadata:
+      labels:
+        app: ro-service
+    spec:
+      containers:
+      - name: ro-service
+        image: whartonaldrick/heaven:ro-service-latest
+        imagePullPolicy: Always # Force le téléchargement de la dernière version
+        ports:
+        - containerPort: 4321
+        # Ajout des variables d'environnement de ton docker-compose
+        env:
+        - name: FLASK_ENV
+          value: "production"
+        - name: FLASK_APP
+          value: "run.py"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"

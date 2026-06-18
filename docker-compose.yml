@@ -1,9 +1,10 @@
 services:
-  backend:
+  ro-service:
     build:
       context: ./RO-Service
       dockerfile: Dockerfile
-    container_name: ro-backend
+    image: ro-service:latest
+    container_name: ro-service
     ports:
       - "4321:4321"
     environment:
@@ -14,19 +15,21 @@ services:
       - ro-network
     restart: unless-stopped
 
-  frontend:
+  ro-visualisation:
     build:
       context: ./RO-Visualisation
       dockerfile: Dockerfile
-    container_name: ro-frontend
+    image: ro-visualisation:latest
+    container_name: ro-visualisation
     ports:
       - "8010:80"
     depends_on:
-      - backend
+      - ro-service
     networks:
       - ro-network
     restart: unless-stopped
 
 networks:
   ro-network:
+    name: ro-network
     driver: bridge

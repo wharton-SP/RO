@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ro-visualisation-deployment
+  labels:
+    app: ro-visualisation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ro-visualisation
+  template:
+    metadata:
+      labels:
+        app: ro-visualisation
+    spec:
+      containers:
+      - name: ro-visualisation
+        image: whartonaldrick/heaven:ro-visualisation-latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80 # Nginx écoute sur 80 dans l'image Alpine
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
